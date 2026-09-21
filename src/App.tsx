@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ALL_QUESTIONS } from './data'
 import type { QuizItem } from './lib/quiz'
-import { buildSet, buildSetFromIds } from './lib/quiz'
+import { SET_SIZE, buildSet, buildSetFromIds } from './lib/quiz'
 import type { Source } from './lib/source'
 import { labelOf, poolOf } from './lib/source'
 import type { Progress } from './lib/storage'
@@ -20,12 +20,13 @@ export function App() {
   const [view, setView] = useState<View>({ kind: 'home' })
   const [seq, setSeq] = useState(0)
 
-  function start(source: Source, current: Progress = progress) {
+  /** exclude には直前のセットで出した問題を渡し、続けて同じ問題が出るのを防ぐ */
+  function start(source: Source, exclude: readonly string[] = []) {
     const pool = poolOf(source)
     const items =
       source.kind === 'wrong'
-        ? buildSetFromIds(pool, wrongIds(current))
-        : buildSet(pool, current)
+        ? buildSetFromIds(pool, wrongIds(progress))
+        : buildSet(pool, progress, SET_SIZE, exclude)
     if (items.length === 0) {
       setView({ kind: 'home' })
       return
@@ -35,7 +36,8 @@ export function App() {
     setView({ kind: 'quiz', source, title: labelOf(source), items, seq: next })
   }
 
-  function retry(ids: string[]) {
+  /** 誤答のやり直し。source は引き継ぎ、この後の「次の10問へ」が元の出題元に戻るようにする */
+  function retry(ids: string[], source: Source) {
     const items = buildSetFromIds(ALL_QUESTIONS, ids, ids.length)
     if (items.length === 0) {
       setView({ kind: 'home' })
@@ -43,7 +45,7 @@ export function App() {
     }
     const next = seq + 1
     setSeq(next)
-    setView({ kind: 'quiz', source: { kind: 'wrong' }, title: 'まちがい直し', items, seq: next })
+    setView({ kind: 'quiz', source, title: 'まちがい直し', items, seq: next })
   }
 
   function handleAnswer(id: string, correct: boolean) {
@@ -77,8 +79,8 @@ export function App() {
         title={view.title}
         items={view.items}
         results={view.results}
-        onRetryWrong={retry}
-        onNextSet={() => start(view.source)}
+        onRetryWrong={(ids) => retry(ids, view.source)}
+        onNextSet={() => start(view.source, view.items.map((it) => it.question.id))}
         onHome={() => setView({ kind: 'home' })}
       />
     )

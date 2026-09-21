@@ -33,17 +33,36 @@ function toItem(question: Question): QuizItem {
 /**
  * 出題セットを作る。まだ解いていない問題を優先し、足りない分を既出から埋める。
  * 同じ問題ばかり繰り返さず、未到達の範囲から先に潰せるようにするため。
+ *
+ * exclude には直前のセットで出した問題を渡す。分野を一周して未出題が尽きると
+ * 既出から埋めることになるが、そのとき直前に解いたばかりの問題が再び出るのを避ける。
+ * 既出から埋める順番は、間違えたままの問題 → 解答回数の少ない問題を先にする。
  */
-export function buildSet(pool: Question[], progress: Progress, size = SET_SIZE): QuizItem[] {
-  const unseen = pool.filter((q) => {
-    const s = progress[q.id]
-    return !s || s.correct + s.wrong === 0
+export function buildSet(
+  pool: Question[],
+  progress: Progress,
+  size = SET_SIZE,
+  exclude: readonly string[] = [],
+): QuizItem[] {
+  const skip = new Set(exclude)
+  const remaining = pool.filter((q) => !skip.has(q.id))
+  // 除外するとセットを埋められないほど小さいプールでは、除外自体を諦める
+  const target = remaining.length >= size ? remaining : pool
+
+  const timesAnswered = (id: string) => {
+    const s = progress[id]
+    return s ? s.correct + s.wrong : 0
+  }
+
+  const unseen = shuffle(target.filter((q) => timesAnswered(q.id) === 0))
+  const seen = shuffle(target.filter((q) => timesAnswered(q.id) > 0)).sort((a, b) => {
+    const aWrong = progress[a.id]?.lastWrong ? 1 : 0
+    const bWrong = progress[b.id]?.lastWrong ? 1 : 0
+    if (aWrong !== bWrong) return bWrong - aWrong
+    return timesAnswered(a.id) - timesAnswered(b.id)
   })
-  const seen = pool.filter((q) => {
-    const s = progress[q.id]
-    return !!s && s.correct + s.wrong > 0
-  })
-  const picked = [...shuffle(unseen), ...shuffle(seen)].slice(0, size)
+
+  const picked = [...unseen, ...seen].slice(0, size)
   return shuffle(picked).map(toItem)
 }
 
