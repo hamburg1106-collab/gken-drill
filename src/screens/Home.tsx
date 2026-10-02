@@ -1,4 +1,5 @@
 import { ALL_QUESTIONS, CATEGORIES } from '../data'
+import { TERM_MAPS } from '../data/maps'
 import type { Progress } from '../lib/storage'
 import { accuracyOf, wrongIds } from '../lib/storage'
 import type { Source } from '../lib/source'
@@ -6,6 +7,7 @@ import type { Source } from '../lib/source'
 type Props = {
   progress: Progress
   onStart: (source: Source) => void
+  onOpenMaps: () => void
   onReset: () => void
 }
 
@@ -20,7 +22,7 @@ function Bar({ answered, correct, total }: { answered: number; correct: number; 
   )
 }
 
-export function Home({ progress, onStart, onReset }: Props) {
+export function Home({ progress, onStart, onOpenMaps, onReset }: Props) {
   const allIds = ALL_QUESTIONS.map((q) => q.id)
   const total = accuracyOf(progress, allIds)
   const wrong = wrongIds(progress)
@@ -50,6 +52,11 @@ export function Home({ progress, onStart, onReset }: Props) {
           <span className="card-sub">
             {wrong.length === 0 ? '対象なし（正解すればリストから外れます）' : `${wrong.length}問`}
           </span>
+        </button>
+
+        <button className="card card-map" onClick={onOpenMaps}>
+          <span className="card-title">用語マップ</span>
+          <span className="card-sub">{TERM_MAPS.length}枚の図で、用語どうしのつながりを確認する</span>
         </button>
       </section>
 

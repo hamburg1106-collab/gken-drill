@@ -5,11 +5,13 @@ type Props = {
   items: QuizItem[]
   results: boolean[]
   onRetryWrong: (ids: string[]) => void
-  onNextSet: () => void
+  /** 省略すると「次の10問へ」を出さない（用語マップから来た場合は問題が数問しかないため） */
+  onNextSet?: () => void
   onHome: () => void
+  homeLabel?: string
 }
 
-export function Result({ title, items, results, onRetryWrong, onNextSet, onHome }: Props) {
+export function Result({ title, items, results, onRetryWrong, onNextSet, onHome, homeLabel = 'ホームに戻る' }: Props) {
   const correct = results.filter(Boolean).length
   const wrongItems = items.filter((_, i) => results[i] === false)
   const pct = results.length === 0 ? 0 : Math.round((correct / results.length) * 100)
@@ -38,7 +40,7 @@ export function Result({ title, items, results, onRetryWrong, onNextSet, onHome 
           </ul>
         </section>
       ) : (
-        <p className="all-correct">全問正解。次のセットへ進める。</p>
+        <p className="all-correct">全問正解。</p>
       )}
 
       <div className="actions">
@@ -50,11 +52,13 @@ export function Result({ title, items, results, onRetryWrong, onNextSet, onHome 
             この{wrongItems.length}問をやり直す
           </button>
         )}
-        <button className="btn" onClick={onNextSet}>
-          次の10問へ
-        </button>
+        {onNextSet && (
+          <button className="btn" onClick={onNextSet}>
+            次の10問へ
+          </button>
+        )}
         <button className="btn btn-ghost" onClick={onHome}>
-          ホームに戻る
+          {homeLabel}
         </button>
       </div>
     </div>

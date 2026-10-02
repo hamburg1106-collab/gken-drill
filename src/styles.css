@@ -545,3 +545,278 @@ button {
   color: var(--muted);
   font-weight: 400;
 }
+
+/* ---------- 用語マップ ---------- */
+
+.card-map {
+  border-color: #3b5568;
+}
+
+.sub-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sub-head h1 {
+  font-size: 18px;
+  margin: 6px 0;
+  line-height: 1.4;
+}
+
+.term-map .lede,
+.maps .lede {
+  margin-top: 6px;
+}
+
+.legend {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.diagram {
+  margin: 0 -8px;
+  padding: 4px 0;
+  border-radius: 12px;
+  background: #121c27;
+  border: 1px solid var(--border);
+}
+
+.diagram svg {
+  display: block;
+  touch-action: manipulation;
+}
+
+/* 線の種類 */
+.edge line {
+  stroke-width: 1.5;
+  fill: none;
+}
+
+.edge polygon {
+  stroke: none;
+}
+
+.edge-evolve line {
+  stroke: var(--accent);
+}
+.edge-evolve polygon {
+  fill: var(--accent);
+}
+
+.edge-include line {
+  stroke: #6b7f93;
+  stroke-width: 1.2;
+}
+
+.edge-contrast line {
+  stroke: var(--warn);
+  stroke-dasharray: 5 3;
+}
+.edge-contrast polygon {
+  fill: var(--warn);
+}
+
+.edge-solve line {
+  stroke: var(--correct);
+}
+.edge-solve polygon {
+  fill: var(--correct);
+}
+
+.edge-cause line {
+  stroke: var(--wrong);
+  stroke-dasharray: 2 3;
+}
+.edge-cause polygon {
+  fill: var(--wrong);
+}
+
+.edge-label rect {
+  fill: #121c27;
+}
+
+.edge-label text {
+  fill: #b8c6d4;
+}
+
+.edge.dim,
+.node.dim {
+  opacity: 0.18;
+}
+
+.edge,
+.node {
+  transition: opacity 0.15s;
+}
+
+/* 用語の箱 */
+.node {
+  cursor: pointer;
+  outline: none;
+}
+
+.node rect {
+  fill: var(--surface);
+  stroke: var(--border);
+  stroke-width: 1.2;
+}
+
+.node text {
+  fill: var(--text);
+  pointer-events: none;
+}
+
+.node-group rect {
+  fill: var(--surface-2);
+  stroke: #6b7f93;
+}
+
+.node-group text {
+  font-weight: 700;
+}
+
+.node-problem rect {
+  fill: #34170f;
+  stroke: #8a3a2a;
+}
+
+.node-problem text {
+  fill: #f0c2b6;
+}
+
+.node.active rect,
+.node:focus-visible rect {
+  stroke: var(--accent);
+  stroke-width: 2.4;
+}
+
+/* つながり一覧 */
+.relations h2 {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+  margin: 22px 0 8px;
+}
+
+.relations ul,
+.sheet-rels {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.relations li,
+.sheet-rels li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.rel-chip {
+  flex: none;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  white-space: nowrap;
+}
+
+.rel-evolve {
+  color: var(--accent);
+}
+.rel-include {
+  color: #8a9cae;
+}
+.rel-contrast {
+  color: var(--warn);
+}
+.rel-solve {
+  color: var(--correct);
+}
+.rel-cause {
+  color: var(--wrong);
+}
+
+/* 用語の説明（下から出るシート） */
+.term-map.has-sheet {
+  padding-bottom: 50vh;
+}
+
+.sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 46vh;
+  overflow-y: auto;
+  padding: 14px 16px calc(16px + env(safe-area-inset-bottom));
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -8px 24px rgb(0 0 0 / 0.35);
+  animation: rise 0.18s ease-out;
+}
+
+@media (min-width: 620px) {
+  .sheet {
+    left: 50%;
+    width: 620px;
+    transform: translateX(-50%);
+  }
+}
+
+.sheet-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sheet-title {
+  font-size: 17px;
+  font-weight: 700;
+  flex: 1;
+  min-width: 0;
+}
+
+.chip-problem {
+  color: #f0c2b6;
+  background: #34170f;
+}
+
+.sheet-close {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 12px;
+}
+
+.sheet-def {
+  margin: 8px 0 12px;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.sheet-quiz {
+  width: 100%;
+  margin-top: 14px;
+}
