@@ -1,5 +1,6 @@
 import { ALL_QUESTIONS, CATEGORIES } from '../data'
 import { TERM_MAPS } from '../data/maps'
+import { Countdown } from './Countdown'
 import type { Progress } from '../lib/storage'
 import { accuracyOf, wrongIds } from '../lib/storage'
 import type { Source } from '../lib/source'
@@ -36,6 +37,8 @@ export function Home({ progress, onStart, onOpenMaps, onReset }: Props) {
         </p>
         <Bar answered={total.answered} correct={total.correct} total={ALL_QUESTIONS.length} />
       </header>
+
+      <Countdown remaining={ALL_QUESTIONS.length - total.answered + wrong.length} />
 
       <section className="menu">
         <button className="card card-primary" onClick={() => onStart({ kind: 'all' })}>

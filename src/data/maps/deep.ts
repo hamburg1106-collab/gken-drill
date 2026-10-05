@@ -110,15 +110,19 @@ export const deepMaps: TermMap[] = [
   {
     id: 'cnn-history',
     category: 'arch',
-    title: 'CNNの系譜',
-    summary: 'LeNet から Vision Transformer まで',
+    title: 'CNNの系譜（〇〇Net）',
+    summary: 'LeNet から EfficientNet・ViT まで',
     nodes: [
       { id: 'lenet', label: 'LeNet', col: 1, row: 0, def: '1990年代、ヤン・ルカンの手書き数字認識CNN。原型。' },
       { id: 'alex', label: 'AlexNet', col: 1, row: 1.4, def: '2012年のILSVRCで圧勝。ReLU・ドロップアウト・GPU利用。第3次AIブームの起点。' },
       { id: 'vgg', label: 'VGG', col: 0, row: 2.8, def: '3×3の小さいフィルタを深く重ねる。構造が単純で、転移学習の土台にも使われた。' },
       { id: 'goog', label: 'GoogLeNet', col: 2, row: 2.8, def: 'Inceptionモジュールで、サイズの違うフィルタを並列に適用。1×1畳み込みで計算量を抑える。', match: ['GoogLeNet', 'Inception'] },
-      { id: 'resnet', label: 'ResNet', col: 1, row: 4.2, def: 'スキップ結合で100層を超える深さを実現。2015年のILSVRCで優勝。' },
-      { id: 'vit', label: 'Vision\nTransformer', col: 1, row: 5.6, def: '画像を小さなパッチに分け、単語の代わりにTransformerへ入れる。大規模データではCNNを超えるが、データが少ないと劣りやすい。', match: ['Vision Transformer', 'ViT'] },
+      { id: 'resnet', label: 'ResNet', col: 1, row: 4.2, def: 'スキップ結合で100層を超える深さを実現。2015年のILSVRCで優勝。層が学ぶのは入力との差分（残差）。浅く幅を広げた派生がWide ResNet。', match: ['ResNet'] },
+      { id: 'dense', label: 'DenseNet', col: 0, row: 5.6, def: '前のすべての層の出力をチャンネル方向に「連結」して入力する。ResNetは「加算」、DenseNetは「連結」。' },
+      { id: 'vit', label: 'Vision\nTransformer', col: 1, row: 7, def: '画像を小さなパッチに分け、単語の代わりにTransformerへ入れる。大規模データではCNNを超えるが、データが少ないと劣りやすい。', match: ['Vision Transformer', 'ViT'] },
+      { id: 'senet', label: 'SENet', col: 2, row: 5.6, def: 'チャンネルごとの重要度を学習して重みを付け直す（Squeeze-and-Excitation）。2017年のILSVRCで優勝。' },
+      { id: 'mobile', label: 'MobileNet', col: 0, row: 8.4, def: '畳み込みを深さ方向と点方向に分けて（depthwise separable）計算量を大幅に削減。スマホ向け。' },
+      { id: 'eff', label: 'EfficientNet', col: 2, row: 8.4, def: '深さ・幅・解像度を決まった比率で同時に大きくする（複合スケーリング）。少ないパラメータで高精度。' },
     ],
     edges: [
       { from: 'lenet', to: 'alex', type: 'evolve', label: 'GPU・ReLU' },
@@ -128,6 +132,9 @@ export const deepMaps: TermMap[] = [
       { from: 'vgg', to: 'resnet', type: 'evolve', label: 'スキップ結合' },
       { from: 'goog', to: 'resnet', type: 'evolve' },
       { from: 'resnet', to: 'vit', type: 'evolve', label: 'Transformer化' },
+      { from: 'resnet', to: 'dense', type: 'evolve', label: '加算→連結' },
+      { from: 'resnet', to: 'senet', type: 'evolve', label: 'チャンネルに重み' },
+      { from: 'mobile', to: 'eff', type: 'evolve', label: 'バランスよく拡大' },
     ],
   },
   {

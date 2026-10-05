@@ -846,4 +846,202 @@ export const arch: Question[] = [
       },
     ],
   },
+  {
+    id: 'a36',
+    category: 'arch',
+    text: 'DenseNetの特徴として正しいものはどれか。',
+    answer: 1,
+    needsCheck: true,
+    choices: [
+      {
+        text: '入力を数層先の出力に「足し算」で合流させる',
+        note: 'それはResNetのスキップ結合。DenseNetと取り違えやすい。',
+      },
+      {
+        text: 'ある層に、それより前のすべての層の出力をチャンネル方向に「連結」して入力する',
+        note: '特徴を使い回すため、少ないパラメータで高い精度が出る。ResNetが「加算」なのに対し、DenseNetは「連結」で、ここが試験で問われやすい。',
+      },
+      {
+        text: '畳み込みを空間方向とチャンネル方向に分解して計算量を減らす',
+        note: 'それはMobileNetの特徴である。',
+      },
+      {
+        text: '異なるサイズのフィルタを並列に適用する',
+        note: 'それはGoogLeNetのInceptionモジュールである。',
+      },
+    ],
+  },
+  {
+    id: 'a37',
+    category: 'arch',
+    text: 'スマートフォンなど計算資源が限られた端末向けに、畳み込みを「深さ方向（depthwise）」と「点方向（pointwise）」に分けて計算量を大きく減らしたモデルはどれか。',
+    answer: 3,
+    needsCheck: true,
+    choices: [
+      {
+        text: 'VGG',
+        note: '3×3の畳み込みを深く重ねた構成で、パラメータ数はむしろ多い。軽量化を狙ったモデルではない。',
+      },
+      {
+        text: 'ResNet',
+        note: 'スキップ結合で深い層の学習を可能にしたモデル。軽量化が主目的ではない。',
+      },
+      {
+        text: 'AlexNet',
+        note: '2012年のILSVRCで勝ったモデル。軽量化の工夫が主題ではない。',
+      },
+      {
+        text: 'MobileNet',
+        note: '深さ方向分離可能畳み込み（depthwise separable convolution）が核。精度を大きく落とさずに計算量を数分の一にした。',
+      },
+    ],
+  },
+  {
+    id: 'a38',
+    category: 'arch',
+    text: 'EfficientNetが提案した「複合スケーリング（compound scaling）」の考え方はどれか。',
+    answer: 0,
+    needsCheck: true,
+    choices: [
+      {
+        text: 'ネットワークの深さ・幅（チャンネル数）・入力画像の解像度を、決まった比率でバランスよく同時に大きくする',
+        note: 'どれか1つだけを大きくするより効率よく精度が上がることを示した。同じ精度を従来よりずっと少ないパラメータで達成した。',
+      },
+      {
+        text: '層を深くすることだけに集中し、幅は固定する',
+        note: '深さだけを伸ばすのは従来のやり方で、EfficientNetはそれを改めた。',
+      },
+      {
+        text: '学習データの量を増やすことで精度を上げる',
+        note: 'データではなく、モデルの大きくし方に関する提案である。',
+      },
+      {
+        text: '複数のモデルの予測を多数決で統合する',
+        note: 'それはアンサンブル学習の考え方である。',
+      },
+    ],
+  },
+  {
+    id: 'a39',
+    category: 'arch',
+    text: 'SENet（Squeeze-and-Excitation Network）が導入した仕組みはどれか。',
+    answer: 2,
+    needsCheck: true,
+    choices: [
+      {
+        text: '画像をパッチに分けてTransformerに入力する',
+        note: 'それはVision Transformerの仕組みである。',
+      },
+      {
+        text: '前のすべての層の出力を連結する',
+        note: 'それはDenseNetの仕組みである。',
+      },
+      {
+        text: '特徴マップのチャンネルごとに重要度を学習し、重みを付け直す',
+        note: '各チャンネルを平均して要約（Squeeze）し、そこから重要度を計算して掛け直す（Excitation）。既存のCNNに組み込みやすく、2017年のILSVRCで優勝した。',
+      },
+      {
+        text: 'エンコーダとデコーダをU字型につなぐ',
+        note: 'それはU-Netの構造である。',
+      },
+    ],
+  },
+  {
+    id: 'a40',
+    category: 'arch',
+    text: '2014年のILSVRCで優勝したモデルはどれか。',
+    answer: 3,
+    needsCheck: true,
+    choices: [
+      {
+        text: 'AlexNet',
+        note: '2012年の優勝モデル。ここから深層学習の時代が始まった。',
+      },
+      {
+        text: 'ResNet',
+        note: '2015年の優勝モデルである。',
+      },
+      {
+        text: 'VGG',
+        note: '同じ2014年に好成績を収めたが、優勝はGoogLeNetで、VGGは分類部門で2位。構造が単純で扱いやすく、その後の研究で広く使われた。',
+      },
+      {
+        text: 'GoogLeNet',
+        note: 'Inceptionモジュールを積み重ねた22層のモデル。1×1畳み込みで計算量を抑えた。',
+      },
+    ],
+  },
+  {
+    id: 'a41',
+    category: 'arch',
+    text: 'ResNetの層が学習するものとして正しいものはどれか。',
+    answer: 0,
+    choices: [
+      {
+        text: '入力 x に対する出力との「差分（残差）」F(x)。最終的な出力は F(x)＋x になる',
+        note: '何も変えなくてよい層は F(x) を0にするだけで済むため、深くしても性能が落ちにくい。Residual（残差）がResNetの名前の由来。',
+      },
+      {
+        text: '入力 x を完全に作り替えた新しい表現。入力は後ろに渡さない',
+        note: 'それは通常のCNNの層の考え方で、深くすると学習が難しくなった原因でもある。',
+      },
+      {
+        text: '前のすべての層の出力を連結したもの',
+        note: 'それはDenseNetの考え方である。',
+      },
+      {
+        text: 'チャンネルごとの重要度',
+        note: 'それはSENetの考え方である。',
+      },
+    ],
+  },
+  {
+    id: 'a42',
+    category: 'arch',
+    text: 'Wide ResNetがResNetに対して行った変更はどれか。',
+    answer: 2,
+    needsCheck: true,
+    choices: [
+      {
+        text: 'スキップ結合をすべて取り除いた',
+        note: 'スキップ結合は残している。ResNetの派生モデルである。',
+      },
+      {
+        text: '層の数を数千層にまで増やした',
+        note: '深さを増す方向とは逆の発想である。',
+      },
+      {
+        text: '層を浅くする代わりに、各層のチャンネル数（幅）を増やした',
+        note: '非常に深いResNetより、浅く幅の広いネットワークのほうが学習が速く、同等以上の精度が出ることを示した。',
+      },
+      {
+        text: '畳み込みをAttentionに置き換えた',
+        note: 'Attentionへの置き換えはVision Transformerの系統である。',
+      },
+    ],
+  },
+  {
+    id: 'a43',
+    category: 'arch',
+    text: '「〇〇Net」という名前のモデルと、主な用途の組み合わせとして誤っているものはどれか。',
+    answer: 3,
+    choices: [
+      {
+        text: 'LeNet ― 手書き数字の認識',
+        note: '正しい。1990年代にヤン・ルカンが郵便番号の読み取りなどのために作ったCNNの原型。',
+      },
+      {
+        text: 'U-Net ― 画像のセグメンテーション',
+        note: '正しい。画素単位の領域分割に使われ、特に医用画像で広く使われる。',
+      },
+      {
+        text: 'MobileNet ― スマートフォン向けの軽量な画像認識',
+        note: '正しい。計算量を抑えて端末上で動かすことを狙ったモデル。',
+      },
+      {
+        text: 'WaveNet ― 画像分類',
+        note: '誤り。WaveNetは音声波形を生成するモデルで、自然な音声合成に使われる。名前に「Net」が付いても画像のモデルとは限らない。',
+      },
+    ],
+  },
 ]

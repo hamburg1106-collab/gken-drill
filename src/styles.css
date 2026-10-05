@@ -820,3 +820,92 @@ button {
   width: 100%;
   margin-top: 14px;
 }
+
+/* ---------- 試験日カウントダウン ---------- */
+
+.countdown {
+  margin: 18px 0 0;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  text-align: center;
+}
+
+.countdown p {
+  margin: 0;
+}
+
+.cd-name {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.cd-main {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+
+.cd-main.cd-soon {
+  color: var(--warn);
+}
+
+.cd-date {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.cd-slots {
+  display: inline-flex;
+  margin-top: 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.cd-slots button {
+  border: none;
+  background: none;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.cd-slots button.active {
+  background: var(--accent);
+  color: #06161f;
+  font-weight: 700;
+}
+
+.cd-apply {
+  margin-top: 10px !important;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.cd-apply.cd-soon {
+  color: var(--warn);
+}
+
+.countdown a {
+  color: var(--accent);
+}
+
+.cd-pace {
+  margin-top: 8px !important;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.cd-pace strong {
+  color: var(--text);
+}
+
+.countdown-empty {
+  font-size: 13px;
+  color: var(--muted);
+}
