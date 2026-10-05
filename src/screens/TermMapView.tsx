@@ -4,6 +4,7 @@ import type { EdgeType, MapEdge, MapNode, TermMap } from '../data/mapTypes'
 import { EDGE_TYPE_LABEL } from '../data/mapTypes'
 import type { Box, EdgeGeom } from '../lib/mapLayout'
 import { LABEL_FONT, NODE_FONT, VIEW_W, boxOf, edgeGeom, labelBox, viewHeight } from '../lib/mapLayout'
+import { useBackHandler } from '../lib/backButton'
 import { relatedQuestionIds } from '../lib/related'
 
 type Props = {
@@ -74,6 +75,8 @@ function EdgeLabel({ g, a, b, dim }: { g: EdgeGeom; a: Box; b: Box; dim: boolean
 
 export function TermMapView({ map, onBack, onQuiz }: Props) {
   const [selected, setSelected] = useState<string | null>(null)
+  // 説明シートが開いているときは、戻るボタンでまずシートを閉じる
+  useBackHandler(selected !== null, () => setSelected(null))
 
   const { boxes, geoms, height, nodeIndex } = useMemo(() => {
     const boxes = new Map(map.nodes.map((n) => [n.id, boxOf(n)]))

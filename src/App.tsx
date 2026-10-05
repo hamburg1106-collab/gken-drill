@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ALL_QUESTIONS } from './data'
 import { TERM_MAPS } from './data/maps'
+import { listenBack, setGuard } from './lib/backButton'
 import type { QuizItem } from './lib/quiz'
 import { SET_SIZE, buildSet, buildSetFromIds } from './lib/quiz'
 import type { Source } from './lib/source'
@@ -29,6 +30,7 @@ export function App() {
 
   useEffect(() => {
     window.scrollTo({ top: 0 })
+    setGuard(view.kind !== 'home')
   }, [view])
 
   /** 出題・結果画面から抜けるときの戻り先 */
@@ -36,6 +38,28 @@ export function App() {
     if (source.kind === 'term' && lastMapId) setView({ kind: 'map', id: lastMapId })
     else setView({ kind: 'home' })
   }
+
+  // 戻るボタンで1つ上の画面へ。リスナーは1度だけ登録し、最新の状態は ref 経由で読む
+  const backRef = useRef<() => void>(() => {})
+  useEffect(() => {
+    backRef.current = () => {
+      switch (view.kind) {
+        case 'maps':
+          setView({ kind: 'home' })
+          break
+        case 'map':
+          setView({ kind: 'maps' })
+          break
+        case 'quiz':
+        case 'result':
+          leave(view.source)
+          break
+        case 'home':
+          break
+      }
+    }
+  })
+  useEffect(() => listenBack(() => backRef.current()), [])
 
   /** exclude には直前のセットで出した問題を渡し、続けて同じ問題が出るのを防ぐ */
   function start(source: Source, exclude: readonly string[] = []) {
