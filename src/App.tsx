@@ -8,14 +8,18 @@ import type { Source } from './lib/source'
 import { labelOf, poolOf } from './lib/source'
 import type { Progress } from './lib/storage'
 import { loadProgress, recordAnswer, resetProgress, wrongIds } from './lib/storage'
+import type { StudyLog } from './lib/studyLog'
+import { loadLog, recordStudy } from './lib/studyLog'
 import { Home } from './screens/Home'
 import { MapList } from './screens/MapList'
 import { Quiz } from './screens/Quiz'
 import { Result } from './screens/Result'
+import { StudyLogView } from './screens/StudyLogView'
 import { TermMapView } from './screens/TermMapView'
 
 type View =
   | { kind: 'home' }
+  | { kind: 'log' }
   | { kind: 'maps' }
   | { kind: 'map'; id: string }
   | { kind: 'quiz'; source: Source; title: string; items: QuizItem[]; seq: number }
@@ -23,6 +27,7 @@ type View =
 
 export function App() {
   const [progress, setProgress] = useState<Progress>(() => loadProgress())
+  const [log, setLog] = useState<StudyLog>(() => loadLog())
   const [view, setView] = useState<View>({ kind: 'home' })
   const [seq, setSeq] = useState(0)
   // 用語マップから問題に入ったとき、解き終えたらその図に戻れるようにする
@@ -45,6 +50,7 @@ export function App() {
     backRef.current = () => {
       switch (view.kind) {
         case 'maps':
+        case 'log':
           setView({ kind: 'home' })
           break
         case 'map':
@@ -89,8 +95,11 @@ export function App() {
     setView({ kind: 'quiz', source, title: 'まちがい直し', items, seq: next })
   }
 
+  // 1問ごとに画面が描き直されるので、ここでの progress と log は常に最新
   function handleAnswer(id: string, correct: boolean) {
-    setProgress((prev) => recordAnswer(prev, id, correct))
+    const next = recordAnswer(progress, id, correct)
+    setProgress(next)
+    setLog(recordStudy(log, correct, next))
   }
 
   if (view.kind === 'quiz') {
@@ -129,6 +138,10 @@ export function App() {
     )
   }
 
+  if (view.kind === 'log') {
+    return <StudyLogView log={log} onBack={() => setView({ kind: 'home' })} />
+  }
+
   if (view.kind === 'maps') {
     return (
       <MapList
@@ -158,7 +171,9 @@ export function App() {
   return (
     <Home
       progress={progress}
+      log={log}
       onStart={(source) => start(source)}
+      onOpenLog={() => setView({ kind: 'log' })}
       onOpenMaps={() => setView({ kind: 'maps' })}
       onReset={() => setProgress(resetProgress())}
     />

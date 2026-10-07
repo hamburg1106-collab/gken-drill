@@ -4,10 +4,14 @@ import { Countdown } from './Countdown'
 import type { Progress } from '../lib/storage'
 import { accuracyOf, wrongIds } from '../lib/storage'
 import type { Source } from '../lib/source'
+import type { StudyLog } from '../lib/studyLog'
+import { formatDuration, todayOf } from '../lib/studyLog'
 
 type Props = {
   progress: Progress
+  log: StudyLog
   onStart: (source: Source) => void
+  onOpenLog: () => void
   onOpenMaps: () => void
   onReset: () => void
 }
@@ -23,10 +27,11 @@ function Bar({ answered, correct, total }: { answered: number; correct: number; 
   )
 }
 
-export function Home({ progress, onStart, onOpenMaps, onReset }: Props) {
+export function Home({ progress, log, onStart, onOpenLog, onOpenMaps, onReset }: Props) {
   const allIds = ALL_QUESTIONS.map((q) => q.id)
   const total = accuracyOf(progress, allIds)
   const wrong = wrongIds(progress)
+  const today = todayOf(log)
 
   return (
     <div className="screen home">
@@ -54,6 +59,17 @@ export function Home({ progress, onStart, onOpenMaps, onReset }: Props) {
           <span className="card-title">間違えた問題だけ</span>
           <span className="card-sub">
             {wrong.length === 0 ? '対象なし（正解すればリストから外れます）' : `${wrong.length}問`}
+          </span>
+        </button>
+
+        <button className="card card-log" onClick={onOpenLog}>
+          <span className="card-title">学習の記録</span>
+          <span className="card-sub">
+            {today
+              ? `今日 ${today.answers}問・${formatDuration(today.studyMs)} ／ ${log.length}日目`
+              : log.length === 0
+                ? '解くと日ごとの記録が自動で残ります'
+                : `今日はまだ ／ これまで ${log.length}日`}
           </span>
         </button>
 
@@ -86,7 +102,8 @@ export function Home({ progress, onStart, onOpenMaps, onReset }: Props) {
         <button
           className="link-danger"
           onClick={() => {
-            if (confirm('解答の記録をすべて消します。よろしいですか？')) onReset()
+            if (confirm('問題ごとの正誤の記録をすべて消します（日ごとの学習の記録は残ります）。よろしいですか？'))
+              onReset()
           }}
         >
           学習記録をリセット
