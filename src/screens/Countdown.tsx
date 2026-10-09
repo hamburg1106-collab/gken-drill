@@ -3,7 +3,7 @@ import { EXAMS, EXAM_INFO_URL } from '../data/exams'
 import { daysUntil, loadSlotId, pickSlot, saveSlotId, slotKey, upcomingExam } from '../lib/exam'
 
 type Props = {
-  /** 未解答と、間違えたままの問題の数。試験日までの1日あたりのペースを出すのに使う */
+  /** 未解答と、間違えたまま・自信なしの問題の数。試験日までの1日あたりのペースを出すのに使う */
   remaining: number
 }
 
@@ -83,7 +83,7 @@ export function Countdown({ remaining }: Props) {
 
       {days > 0 && remaining > 0 && (
         <p className="cd-pace">
-          未解答・間違えたままの問題が {remaining} 問。<strong>1日 {perDay} 問</strong>で試験前に一周できる
+          未解答・間違えたまま・自信なしの問題が {remaining} 問。<strong>1日 {perDay} 問</strong>で試験前に一周できる
         </p>
       )}
     </section>

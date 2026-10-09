@@ -7,9 +7,9 @@ import { SET_SIZE, buildSet, buildSetFromIds } from './lib/quiz'
 import type { Source } from './lib/source'
 import { labelOf, poolOf } from './lib/source'
 import type { Progress } from './lib/storage'
-import { loadProgress, recordAnswer, resetProgress, wrongIds } from './lib/storage'
+import { loadProgress, markUnsure, recordAnswer, resetProgress, reviewIds } from './lib/storage'
 import type { StudyLog } from './lib/studyLog'
-import { loadLog, recordStudy } from './lib/studyLog'
+import { loadLog, recordStudy, refreshReach } from './lib/studyLog'
 import { Home } from './screens/Home'
 import { MapList } from './screens/MapList'
 import { Quiz } from './screens/Quiz'
@@ -23,7 +23,7 @@ type View =
   | { kind: 'maps' }
   | { kind: 'map'; id: string }
   | { kind: 'quiz'; source: Source; title: string; items: QuizItem[]; seq: number }
-  | { kind: 'result'; source: Source; title: string; items: QuizItem[]; results: boolean[] }
+  | { kind: 'result'; source: Source; title: string; items: QuizItem[]; results: boolean[]; unsure: boolean[] }
 
 export function App() {
   const [progress, setProgress] = useState<Progress>(() => loadProgress())
@@ -72,7 +72,7 @@ export function App() {
     const pool = poolOf(source)
     const items =
       source.kind === 'wrong'
-        ? buildSetFromIds(pool, wrongIds(progress))
+        ? buildSetFromIds(pool, reviewIds(progress))
         : buildSet(pool, progress, SET_SIZE, exclude)
     if (items.length === 0) {
       setView({ kind: 'home' })
@@ -102,6 +102,12 @@ export function App() {
     setLog(recordStudy(log, correct, next))
   }
 
+  function handleUnsure(id: string, unsure: boolean) {
+    const next = markUnsure(progress, id, unsure)
+    setProgress(next)
+    setLog(refreshReach(log, next))
+  }
+
   if (view.kind === 'quiz') {
     return (
       <Quiz
@@ -109,13 +115,15 @@ export function App() {
         title={view.title}
         items={view.items}
         onAnswer={handleAnswer}
-        onFinish={(results) =>
+        onUnsure={handleUnsure}
+        onFinish={(results, unsure) =>
           setView({
             kind: 'result',
             source: view.source,
             title: view.title,
             items: view.items,
             results,
+            unsure,
           })
         }
         onQuit={() => leave(view.source)}
@@ -130,6 +138,7 @@ export function App() {
         title={view.title}
         items={view.items}
         results={view.results}
+        unsure={view.unsure}
         onRetryWrong={(ids) => retry(ids, view.source)}
         onNextSet={fromMap ? undefined : () => start(view.source, view.items.map((it) => it.question.id))}
         onHome={() => leave(view.source)}

@@ -2,7 +2,7 @@ import { ALL_QUESTIONS, CATEGORIES } from '../data'
 import { TERM_MAPS } from '../data/maps'
 import { Countdown } from './Countdown'
 import type { Progress } from '../lib/storage'
-import { accuracyOf, wrongIds } from '../lib/storage'
+import { accuracyOf, unsureIds, wrongIds } from '../lib/storage'
 import type { Source } from '../lib/source'
 import type { StudyLog } from '../lib/studyLog'
 import { formatDuration, todayOf } from '../lib/studyLog'
@@ -31,6 +31,8 @@ export function Home({ progress, log, onStart, onOpenLog, onOpenMaps, onReset }:
   const allIds = ALL_QUESTIONS.map((q) => q.id)
   const total = accuracyOf(progress, allIds)
   const wrong = wrongIds(progress)
+  const unsure = unsureIds(progress)
+  const review = wrong.length + unsure.length
   const today = todayOf(log)
 
   return (
@@ -43,7 +45,7 @@ export function Home({ progress, log, onStart, onOpenLog, onOpenMaps, onReset }:
         <Bar answered={total.answered} correct={total.correct} total={ALL_QUESTIONS.length} />
       </header>
 
-      <Countdown remaining={ALL_QUESTIONS.length - total.answered + wrong.length} />
+      <Countdown remaining={ALL_QUESTIONS.length - total.answered + review} />
 
       <section className="menu">
         <button className="card card-primary" onClick={() => onStart({ kind: 'all' })}>
@@ -53,12 +55,14 @@ export function Home({ progress, log, onStart, onOpenLog, onOpenMaps, onReset }:
 
         <button
           className="card card-wrong"
-          disabled={wrong.length === 0}
+          disabled={review === 0}
           onClick={() => onStart({ kind: 'wrong' })}
         >
-          <span className="card-title">間違えた問題だけ</span>
+          <span className="card-title">間違えた・自信なしの問題</span>
           <span className="card-sub">
-            {wrong.length === 0 ? '対象なし（正解すればリストから外れます）' : `${wrong.length}問`}
+            {review === 0
+              ? '対象なし（自信を持って正解すればリストから外れます）'
+              : `間違い ${wrong.length}問 ／ 自信なし ${unsure.length}問`}
           </span>
         </button>
 

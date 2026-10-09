@@ -36,7 +36,7 @@ function toItem(question: Question): QuizItem {
  *
  * exclude には直前のセットで出した問題を渡す。分野を一周して未出題が尽きると
  * 既出から埋めることになるが、そのとき直前に解いたばかりの問題が再び出るのを避ける。
- * 既出から埋める順番は、間違えたままの問題 → 解答回数の少ない問題を先にする。
+ * 既出から埋める順番は、間違えたままの問題 → 自信なしの問題 → 解答回数の少ない問題を先にする。
  */
 export function buildSet(
   pool: Question[],
@@ -55,10 +55,15 @@ export function buildSet(
   }
 
   const unseen = shuffle(target.filter((q) => timesAnswered(q.id) === 0))
+  const priority = (id: string) => {
+    const s = progress[id]
+    if (s?.lastWrong) return 2
+    if (s?.lastUnsure) return 1
+    return 0
+  }
   const seen = shuffle(target.filter((q) => timesAnswered(q.id) > 0)).sort((a, b) => {
-    const aWrong = progress[a.id]?.lastWrong ? 1 : 0
-    const bWrong = progress[b.id]?.lastWrong ? 1 : 0
-    if (aWrong !== bWrong) return bWrong - aWrong
+    const diff = priority(b.id) - priority(a.id)
+    if (diff !== 0) return diff
     return timesAnswered(a.id) - timesAnswered(b.id)
   })
 

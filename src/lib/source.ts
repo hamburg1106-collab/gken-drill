@@ -13,7 +13,7 @@ export function labelOf(source: Source): string {
     case 'all':
       return '全分野ランダム'
     case 'wrong':
-      return '間違えた問題'
+      return '間違えた・自信なしの問題'
     case 'category':
       return CATEGORIES.find((c) => c.id === source.id)?.label ?? '分野別'
     case 'term':

@@ -6,14 +6,18 @@ type Props = {
   title: string
   items: QuizItem[]
   onAnswer: (id: string, correct: boolean) => void
-  onFinish: (results: boolean[]) => void
+  /** 正解した問題に「勘だった（自信なし）」を付ける・外す */
+  onUnsure: (id: string, unsure: boolean) => void
+  /** unsure は results と同じ並びで、自信なしを付けたかどうか */
+  onFinish: (results: boolean[], unsure: boolean[]) => void
   onQuit: () => void
 }
 
-export function Quiz({ title, items, onAnswer, onFinish, onQuit }: Props) {
+export function Quiz({ title, items, onAnswer, onUnsure, onFinish, onQuit }: Props) {
   const [index, setIndex] = useState(0)
   const [selected, setSelected] = useState<number | null>(null)
   const [results, setResults] = useState<boolean[]>([])
+  const [unsure, setUnsure] = useState<boolean[]>([])
   const feedbackRef = useRef<HTMLDivElement>(null)
 
   // 選択肢が長いと解説が画面外に出るので、解答したら解説の先頭まで送る
@@ -30,18 +34,26 @@ export function Quiz({ title, items, onAnswer, onFinish, onQuit }: Props) {
   const categoryLabel = CATEGORIES.find((c) => c.id === question.category)?.label ?? ''
   const answered = selected !== null
   const isLast = index === items.length - 1
+  const isUnsure = unsure[index] ?? false
 
   function choose(i: number) {
     if (selected !== null) return
     setSelected(i)
     const correct = i === answerIndex
     setResults((prev) => [...prev, correct])
+    setUnsure((prev) => [...prev, false])
     onAnswer(question.id, correct)
+  }
+
+  function toggleUnsure() {
+    const flag = !isUnsure
+    setUnsure((prev) => prev.map((v, i) => (i === index ? flag : v)))
+    onUnsure(question.id, flag)
   }
 
   function next() {
     if (isLast) {
-      onFinish(results)
+      onFinish(results, unsure)
       return
     }
     setIndex((i) => i + 1)
@@ -112,6 +124,16 @@ export function Quiz({ title, items, onAnswer, onFinish, onQuit }: Props) {
             {selected === answerIndex ? '正解' : '不正解'}
             <span className="verdict-sub">正解は「{choices[answerIndex]?.text}」</span>
           </p>
+
+          {selected === answerIndex && (
+            <button
+              className={`unsure-toggle${isUnsure ? ' on' : ''}`}
+              aria-pressed={isUnsure}
+              onClick={toggleUnsure}
+            >
+              {isUnsure ? '🤔 自信なし（復習に回します）・取り消す' : '🤔 勘だった（自信なし）'}
+            </button>
+          )}
 
           <p className="explain">{choices[answerIndex]?.note}</p>
 

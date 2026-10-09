@@ -1001,17 +1001,78 @@ button {
   stroke-dasharray: 3 3;
 }
 
+.study-log {
+  /* 到達度グラフの2系列。暗い背景で色覚の違いがあっても見分けられる組み合わせを検証済み */
+  --series-all: #d95926;
+  --series-sure: #3987e5;
+}
+
 .chart-line {
   fill: none;
-  stroke: var(--accent);
   stroke-width: 2;
   stroke-linejoin: round;
 }
 
+.chart-line-all {
+  stroke: var(--series-all);
+}
+
+.chart-line-sure {
+  stroke: var(--series-sure);
+}
+
+.chart-band {
+  fill: var(--series-all);
+  opacity: 0.18;
+}
+
 .chart-dot {
-  fill: var(--accent);
   stroke: var(--surface);
   stroke-width: 2;
+}
+
+.chart-dot-all {
+  fill: var(--series-all);
+}
+
+.chart-dot-sure {
+  fill: var(--series-sure);
+}
+
+.chart-label {
+  fill: var(--text);
+  font-size: 11px;
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 0 0 6px;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.chart-legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.swatch {
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.swatch-all {
+  background: var(--series-all);
+}
+
+.swatch-sure {
+  background: var(--series-sure);
 }
 
 .chart-dot-sel {
@@ -1059,4 +1120,25 @@ button {
 
 .log-table tr.sel td {
   background: var(--surface-2);
+}
+
+/* ---------- 自信なし ---------- */
+
+.unsure-toggle {
+  display: block;
+  width: 100%;
+  margin: 4px 0 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px dashed var(--border);
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 14px;
+  text-align: left;
+}
+
+.unsure-toggle.on {
+  border-style: solid;
+  border-color: var(--warn);
+  color: var(--text);
 }

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { ALL_QUESTIONS } from '../data'
 import type { StudyLog } from '../lib/studyLog'
-import { dateKey, formatDuration, shortDate, toCsv, toMarkdown } from '../lib/studyLog'
+import { dateKey, formatDuration, shortDate, sureOf, toCsv, toMarkdown } from '../lib/studyLog'
 
 type Props = {
   log: StudyLog
@@ -34,6 +34,9 @@ function useWidth<T extends HTMLElement>() {
 const PAD = { top: 12, right: 12, bottom: 24, left: 36 }
 /** 両端の棒が軸や枠にかからないよう、最初と最後の日を内側に寄せる幅 */
 const EDGE = 14
+/** 到達度グラフの右端に置く系列名の幅と、2つのラベルの最小間隔 */
+const LABEL_W = 62
+const LABEL_GAP = 14
 
 type ChartProps = {
   log: StudyLog
@@ -42,10 +45,10 @@ type ChartProps = {
 }
 
 /** 横軸（日付）の共通計算。勉強しなかった日も間隔として残す */
-function useXScale(log: StudyLog, width: number) {
+function useXScale(log: StudyLog, width: number, right = PAD.right) {
   const origin = log[0]!.date
   const span = Math.max(1, dayIndex(log[log.length - 1]!.date, origin))
-  const innerW = Math.max(0, width - PAD.left - PAD.right - EDGE * 2)
+  const innerW = Math.max(0, width - PAD.left - right - EDGE * 2)
   // 1日だけのときは中央に置く
   const x = (date: string) =>
     log.length === 1 ? PAD.left + EDGE + innerW / 2 : PAD.left + EDGE + (dayIndex(date, origin) / span) * innerW
@@ -92,10 +95,21 @@ function ReachChart({ log, selected, onSelect }: ChartProps) {
   const height = 170
   const total = ALL_QUESTIONS.length
   const innerH = height - PAD.top - PAD.bottom
-  const { x } = useXScale(log, width)
+  // 右端に系列名を直接置くので、右側の余白を広く取る
+  const { x } = useXScale(log, width, LABEL_W)
   const y = (pct: number) => PAD.top + innerH * (1 - pct / 100)
-  const pctOf = (i: number) => (log[i]!.reach.correct / total) * 100
-  const points = log.map((d, i) => `${x(d.date)},${y(pctOf(i))}`).join(' ')
+  // 上の線：勘を含む正解、下の線：自信ありの正解。2本の間の帯が「勘・雰囲気」
+  const allY = log.map((d) => y((d.reach.correct / total) * 100))
+  const sureY = log.map((d) => y((sureOf(d.reach) / total) * 100))
+  const xs = log.map((d) => x(d.date))
+  const line = (ys: number[]) => xs.map((px, i) => `${px},${ys[i]}`).join(' ')
+  const band = [...xs.map((px, i) => `${px},${allY[i]}`), ...[...xs].reverse().map((px, i) => `${px},${sureY[xs.length - 1 - i]}`)].join(' ')
+  const hasUnsure = log.some((d) => (d.reach.unsure ?? 0) > 0)
+  const last = log.length - 1
+  // 2本の線が近いとラベルが重なるので、最低 LABEL_GAP は離す
+  // 下端の日付と重ならないよう、描画範囲の中に収める
+  const labelSureY = Math.min(Math.max(sureY[last]!, allY[last]! + LABEL_GAP) + 4, PAD.top + innerH - 4)
+  const labelAllY = Math.min(allY[last]! + 4, labelSureY - LABEL_GAP)
   const sel = log[selected]!
 
   return (
@@ -118,16 +132,32 @@ function ReachChart({ log, selected, onSelect }: ChartProps) {
             </g>
           ))}
           <line className="chart-cross" x1={x(sel.date)} x2={x(sel.date)} y1={PAD.top} y2={PAD.top + innerH} />
-          {log.length > 1 && <polyline className="chart-line" points={points} />}
+          {log.length > 1 && hasUnsure && <polygon className="chart-band" points={band} />}
+          {log.length > 1 && <polyline className="chart-line chart-line-all" points={line(allY)} />}
+          {log.length > 1 && <polyline className="chart-line chart-line-sure" points={line(sureY)} />}
           {log.map((d, i) => (
-            <circle
-              key={d.date}
-              className={i === selected ? 'chart-dot chart-dot-sel' : 'chart-dot'}
-              cx={x(d.date)}
-              cy={y(pctOf(i))}
-              r={i === selected ? 5 : 4}
-            />
+            <g key={d.date}>
+              <circle
+                className={i === selected ? 'chart-dot chart-dot-all chart-dot-sel' : 'chart-dot chart-dot-all'}
+                cx={xs[i]}
+                cy={allY[i]}
+                r={i === selected ? 5 : 4}
+              />
+              <circle
+                className={i === selected ? 'chart-dot chart-dot-sure chart-dot-sel' : 'chart-dot chart-dot-sure'}
+                cx={xs[i]}
+                cy={sureY[i]}
+                r={i === selected ? 5 : 4}
+              />
+            </g>
           ))}
+          {/* 最新の点の右に系列名を直接添える */}
+          <text className="chart-label" x={xs[last]! + 10} y={labelAllY}>
+            勘を含む
+          </text>
+          <text className="chart-label" x={xs[last]! + 10} y={labelSureY}>
+            自信あり
+          </text>
           <XLabels log={log} x={x} height={height} />
         </svg>
       )}
@@ -271,10 +301,21 @@ export function StudyLogView({ log, onBack }: Props) {
         <strong>{shortDate(sel.date)}</strong>
         {sel.date === dateKey(Date.now()) && '（今日）'}　到達度 {reachPct(sel)}%（{sel.reach.correct}/{total}問）・
         {sel.answers}問・正解率 {Math.round((sel.correct / sel.answers) * 100)}%・{formatDuration(sel.studyMs)}
+        {(sel.reach.unsure ?? 0) > 0 && `・自信なし ${sel.reach.unsure}問`}
       </p>
 
       <h2 className="chart-title">到達度の推移</h2>
-      <p className="chart-sub">全{total}問のうち、直近の解答が正解の問題の割合</p>
+      <p className="chart-sub">全{total}問のうち、直近の解答が正解の問題の割合。2本の線の間が「勘・雰囲気」で正解している分</p>
+      <ul className="chart-legend">
+        <li>
+          <span className="swatch swatch-all" aria-hidden="true" />
+          正解（勘を含む）
+        </li>
+        <li>
+          <span className="swatch swatch-sure" aria-hidden="true" />
+          自信ありの正解
+        </li>
+      </ul>
       <ReachChart log={log} selected={selected} onSelect={setSelected} />
 
       <h2 className="chart-title">1日に解いた数</h2>
@@ -290,6 +331,7 @@ export function StudyLogView({ log, onBack }: Props) {
               <th>解いた数</th>
               <th>正解率</th>
               <th>到達度</th>
+              <th>自信なし</th>
             </tr>
           </thead>
           <tbody>
@@ -302,6 +344,7 @@ export function StudyLogView({ log, onBack }: Props) {
                   <td>{d.answers}</td>
                   <td>{Math.round((d.correct / d.answers) * 100)}%</td>
                   <td>{reachPct(d)}%</td>
+                  <td>{d.reach.unsure ?? 0}問</td>
                 </tr>
               )
             })}
@@ -320,7 +363,7 @@ export function StudyLogView({ log, onBack }: Props) {
 
       <p className="note">
         勉強時間は、解答の間隔から推定した目安です（5分以上あいたら休憩とみなします）。到達度は、全{total}
-        問のうち直近の解答が正解の問題の割合です。
+        問のうち直近の解答が正解の問題の割合です。「自信なし」ボタンを付ける前の日の記録は、正解を全部「自信あり」として描いています。
       </p>
     </div>
   )

@@ -63,6 +63,21 @@ export function recordStudy(log: StudyLog, correct: boolean, progress: Progress,
   const gap = last ? now - last.lastAt : Infinity
   const addMs = gap >= 0 && gap <= CONTINUE_MS ? gap : FIRST_ANSWER_MS
 
+  const today = last?.date === date ? last : null
+  const day: Day = {
+    date,
+    answers: (today?.answers ?? 0) + 1,
+    correct: (today?.correct ?? 0) + (correct ? 1 : 0),
+    studyMs: (today?.studyMs ?? 0) + addMs,
+    lastAt: now,
+    ...reachOf(progress),
+  }
+  const next = today ? [...log.slice(0, -1), day] : [...log, day]
+  saveLog(next)
+  return next
+}
+
+function reachOf(progress: Progress): Pick<Day, 'reach' | 'reachByCategory'> {
   const reach = accuracyOf(
     progress,
     ALL_QUESTIONS.map((q) => q.id),
@@ -74,20 +89,21 @@ export function recordStudy(log: StudyLog, correct: boolean, progress: Progress,
       ALL_QUESTIONS.filter((q) => q.category === c.id).map((q) => q.id),
     )
   }
+  return { reach, reachByCategory }
+}
 
-  const today = last?.date === date ? last : null
-  const day: Day = {
-    date,
-    answers: (today?.answers ?? 0) + 1,
-    correct: (today?.correct ?? 0) + (correct ? 1 : 0),
-    studyMs: (today?.studyMs ?? 0) + addMs,
-    lastAt: now,
-    reach,
-    reachByCategory,
-  }
-  const next = today ? [...log.slice(0, -1), day] : [...log, day]
+/** 「自信なし」の付け外しなど、解答数は変えずに到達度だけ変わったときに今日の行を更新する */
+export function refreshReach(log: StudyLog, progress: Progress, now = Date.now()): StudyLog {
+  const today = todayOf(log, now)
+  if (!today) return log
+  const next = [...log.slice(0, -1), { ...today, ...reachOf(progress) }]
   saveLog(next)
   return next
+}
+
+/** 自信を持って正解している問題数（v1の記録は自信なしの情報が無いので、全部を自信ありとみなす） */
+export function sureOf(acc: Accuracy): number {
+  return acc.correct - (acc.unsure ?? 0)
 }
 
 export function todayOf(log: StudyLog, now = Date.now()): Day | null {
@@ -121,7 +137,7 @@ export function toMarkdown(log: StudyLog): string {
   return log
     .map(
       (d) =>
-        `| ${shortDate(d.date)} | ${formatDuration(d.studyMs)} | ${pct(d.correct, d.answers)}%（到達度 ${pct(d.reach.correct, total)}%） | ${d.answers} |  |  |`,
+        `| ${shortDate(d.date)} | ${formatDuration(d.studyMs)} | ${pct(d.correct, d.answers)}%（到達度 ${pct(d.reach.correct, total)}%${d.reach.unsure ? `・自信なし ${d.reach.unsure}問` : ''}） | ${d.answers} |  |  |`,
     )
     .join('\n')
 }
@@ -135,7 +151,9 @@ export function toCsv(log: StudyLog): string {
     '正解数',
     'その日の正解率(%)',
     '到達度(%)',
+    '自信ありの到達度(%)',
     '直近正解の問題数',
+    'うち自信なしの問題数',
     '解答済みの問題数',
     ...CATEGORIES.map((c) => `${c.label} 到達度(%)`),
   ]
@@ -146,7 +164,9 @@ export function toCsv(log: StudyLog): string {
     d.correct,
     pct(d.correct, d.answers),
     pct(d.reach.correct, total),
+    pct(sureOf(d.reach), total),
     d.reach.correct,
+    d.reach.unsure ?? 0,
     d.reach.answered,
     ...CATEGORIES.map((c) => {
       const acc = d.reachByCategory[c.id]
