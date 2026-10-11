@@ -1001,8 +1001,9 @@ button {
   stroke-dasharray: 3 3;
 }
 
-.study-log {
-  /* 到達度グラフの2系列。暗い背景で色覚の違いがあっても見分けられる組み合わせを検証済み */
+.study-log,
+.fig {
+  /* グラフの2系列。暗い背景で色覚の違いがあっても見分けられる組み合わせを検証済み */
   --series-all: #d95926;
   --series-sure: #3987e5;
 }
@@ -1164,4 +1165,503 @@ button {
   border-style: solid;
   border-color: var(--warn);
   color: var(--text);
+}
+
+/* ---------- 動く図解 ---------- */
+
+.fig-open {
+  display: block;
+  width: 100%;
+  margin: 10px 0 2px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--accent);
+  background: none;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.fig-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  overflow-y: auto;
+  background: var(--bg);
+  animation: rise 0.18s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fig-overlay {
+    animation: none;
+  }
+
+  .fig-ball {
+    transition: none;
+  }
+}
+
+.figure-view .lede {
+  margin-top: 6px;
+}
+
+.fig-quiz {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.fig {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.fig-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  touch-action: manipulation;
+}
+
+.fig-sub {
+  margin: 8px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.fig-readout {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  font-size: 13px;
+  line-height: 1.7;
+  font-variant-numeric: tabular-nums;
+}
+
+.fig-note {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.fig-note strong {
+  color: var(--text);
+}
+
+.fig-slider {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.fig-slider strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.fig-slider input {
+  width: 100%;
+  accent-color: var(--accent);
+  height: 28px;
+}
+
+.fig-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.fig-presets button {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 13px;
+}
+
+.fig-presets button.on {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #06161f;
+  font-weight: 600;
+}
+
+.fig-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fig-row-label {
+  flex: none;
+  width: 72px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.fig-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.fig-buttons .btn {
+  flex: 1 1 auto;
+  padding: 11px 14px;
+  font-size: 14px;
+}
+
+.fig-buttons .btn:disabled {
+  opacity: 0.45;
+}
+
+.fig-meter {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  font-size: 13px;
+}
+
+.fig-meter p {
+  margin: 0;
+}
+
+.fig-bar {
+  display: block;
+  position: relative;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.fig-bar > * {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--series-sure);
+}
+
+.fig-bar-alt > * {
+  background: var(--series-all);
+}
+
+/* SVGの中の部品 */
+.fig-axis {
+  stroke: var(--border);
+  stroke-width: 1.5;
+}
+
+.fig-guide {
+  stroke: var(--border);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.fig-curve {
+  fill: none;
+  stroke: var(--series-sure);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+
+.fig-step {
+  stroke: var(--series-all);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 3;
+}
+
+.fig-trail {
+  fill: var(--series-all);
+  opacity: 0.55;
+}
+
+.fig-ball {
+  fill: var(--series-all);
+  stroke: var(--text);
+  stroke-width: 2;
+  transition:
+    cx 0.25s ease,
+    cy 0.25s ease;
+}
+
+.fig-label,
+.fig-tick {
+  fill: var(--muted);
+  font-size: 11px;
+}
+
+.cell {
+  fill: var(--surface-2);
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.cell-pad {
+  fill: none;
+  stroke-dasharray: 2 2;
+}
+
+.cell-on {
+  fill: #3d5a78;
+}
+
+.cell-filter {
+  fill: #7a3a1f;
+}
+
+.cell-hit {
+  fill: #3d5a78;
+}
+
+.cell-current {
+  fill: var(--series-all);
+  stroke: var(--text);
+}
+
+.cell-window {
+  fill: none;
+  stroke: var(--series-all);
+  stroke-width: 2.5;
+}
+
+.cell-text {
+  fill: var(--text);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.cell-text-s {
+  font-size: 9px;
+}
+
+.cell-text-l {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.cell-text-strong {
+  font-weight: 700;
+}
+
+.pool-split {
+  stroke: var(--text);
+  stroke-width: 1.5;
+  opacity: 0.5;
+}
+
+.tap {
+  cursor: pointer;
+}
+
+.pt-train {
+  fill: var(--series-sure);
+  stroke: var(--surface);
+  stroke-width: 2;
+}
+
+.pt-test {
+  fill: var(--surface);
+  stroke: var(--series-all);
+  stroke-width: 2.5;
+}
+
+.dot-key {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dot-key-train {
+  background: var(--series-sure);
+}
+
+.dot-key-test {
+  border: 2px solid var(--series-all);
+}
+
+.tri-key {
+  color: var(--series-all);
+  font-size: 11px;
+}
+
+/* 閾値 */
+.th-zone {
+  fill: var(--series-all);
+  opacity: 0.12;
+}
+
+.th-line {
+  stroke: var(--text);
+  stroke-width: 2;
+}
+
+.th-spam {
+  fill: var(--series-all);
+  stroke: var(--surface);
+  stroke-width: 1.5;
+}
+
+.th-miss {
+  fill: none;
+  stroke: var(--series-all);
+  stroke-width: 2;
+}
+
+.th-ham {
+  fill: var(--series-sure);
+  stroke: var(--surface);
+  stroke-width: 1.5;
+}
+
+.th-false {
+  stroke: var(--text);
+  stroke-width: 2.5;
+}
+
+.th-matrix {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.th-matrix th,
+.th-matrix td {
+  padding: 7px 6px;
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.th-matrix th {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.th-matrix td.ok {
+  background: var(--surface);
+}
+
+.th-matrix td.ng {
+  background: var(--surface-2);
+  font-weight: 600;
+}
+
+.th-metrics,
+.attn-rank {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+}
+
+.th-metrics li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 8px;
+  align-items: center;
+}
+
+.th-metric-label {
+  grid-column: 1 / -1;
+  color: var(--muted);
+}
+
+.th-metrics strong {
+  font-variant-numeric: tabular-nums;
+  min-width: 3em;
+  text-align: right;
+}
+
+/* ソフトマックスとシグモイド */
+.sm-panels {
+  display: grid;
+  gap: 10px;
+}
+
+.sm-panel {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.sm-panel .fig-sub {
+  margin: 0;
+}
+
+.sm-row,
+.attn-rank li {
+  display: grid;
+  grid-template-columns: 3.5em 1fr 6.5em;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sm-row strong,
+.attn-rank strong {
+  text-align: right;
+}
+
+.sm-label {
+  color: var(--muted);
+}
+
+/* Attention */
+.attn-tokens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.attn-token {
+  position: relative;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: none;
+  font-size: 16px;
+}
+
+.attn-token.sel {
+  border-color: var(--text);
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 700;
+}
+
+.attn-pos {
+  position: absolute;
+  top: -8px;
+  left: -4px;
+  padding: 0 4px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #06161f;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.attn-rank {
+  margin-top: 8px;
 }

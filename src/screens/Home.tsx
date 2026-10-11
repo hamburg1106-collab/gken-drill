@@ -1,5 +1,6 @@
 import { ALL_QUESTIONS, CATEGORIES } from '../data'
 import { TERM_MAPS } from '../data/maps'
+import { FIGURES } from '../figures'
 import { Countdown } from './Countdown'
 import type { Progress } from '../lib/storage'
 import { accuracyOf, unsureIds, wrongIds } from '../lib/storage'
@@ -13,6 +14,7 @@ type Props = {
   onStart: (source: Source) => void
   onOpenLog: () => void
   onOpenMaps: () => void
+  onOpenFigures: () => void
   onReset: () => void
 }
 
@@ -27,7 +29,7 @@ function Bar({ answered, correct, total }: { answered: number; correct: number; 
   )
 }
 
-export function Home({ progress, log, onStart, onOpenLog, onOpenMaps, onReset }: Props) {
+export function Home({ progress, log, onStart, onOpenLog, onOpenMaps, onOpenFigures, onReset }: Props) {
   const allIds = ALL_QUESTIONS.map((q) => q.id)
   const total = accuracyOf(progress, allIds)
   const wrong = wrongIds(progress)
@@ -80,6 +82,11 @@ export function Home({ progress, log, onStart, onOpenLog, onOpenMaps, onReset }:
         <button className="card card-map" onClick={onOpenMaps}>
           <span className="card-title">用語マップ</span>
           <span className="card-sub">{TERM_MAPS.length}枚の図で、用語どうしのつながりを確認する</span>
+        </button>
+
+        <button className="card card-map" onClick={onOpenFigures}>
+          <span className="card-title">動く図解</span>
+          <span className="card-sub">{FIGURES.length}つの仕組みを、指で動かして確かめる（機械学習・ディープラーニング・CNNなど）</span>
         </button>
       </section>
 

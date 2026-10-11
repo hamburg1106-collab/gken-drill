@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { ALL_QUESTIONS } from './data'
 import { TERM_MAPS } from './data/maps'
+import { figureOf } from './figures'
 import { listenBack, setGuard } from './lib/backButton'
 import type { QuizItem } from './lib/quiz'
 import { SET_SIZE, buildSet, buildSetFromIds } from './lib/quiz'
@@ -10,6 +11,8 @@ import type { Progress } from './lib/storage'
 import { loadProgress, markUnsure, recordAnswer, resetProgress, reviewIds } from './lib/storage'
 import type { StudyLog } from './lib/studyLog'
 import { loadLog, recordStudy, refreshReach } from './lib/studyLog'
+import { FigureList } from './screens/FigureList'
+import { FigureView } from './screens/FigureView'
 import { Home } from './screens/Home'
 import { MapList } from './screens/MapList'
 import { Quiz } from './screens/Quiz'
@@ -22,6 +25,8 @@ type View =
   | { kind: 'log' }
   | { kind: 'maps' }
   | { kind: 'map'; id: string }
+  | { kind: 'figs' }
+  | { kind: 'fig'; id: string }
   | { kind: 'quiz'; source: Source; title: string; items: QuizItem[]; seq: number }
   | { kind: 'result'; source: Source; title: string; items: QuizItem[]; results: boolean[]; unsure: boolean[] }
 
@@ -41,6 +46,7 @@ export function App() {
   /** 出題・結果画面から抜けるときの戻り先 */
   function leave(source: Source) {
     if (source.kind === 'term' && lastMapId) setView({ kind: 'map', id: lastMapId })
+    else if (source.kind === 'figure') setView({ kind: 'fig', id: source.figureId })
     else setView({ kind: 'home' })
   }
 
@@ -50,11 +56,15 @@ export function App() {
     backRef.current = () => {
       switch (view.kind) {
         case 'maps':
+        case 'figs':
         case 'log':
           setView({ kind: 'home' })
           break
         case 'map':
           setView({ kind: 'maps' })
+          break
+        case 'fig':
+          setView({ kind: 'figs' })
           break
         case 'quiz':
         case 'result':
@@ -133,6 +143,7 @@ export function App() {
 
   if (view.kind === 'result') {
     const fromMap = view.source.kind === 'term' && !!lastMapId
+    const fromFig = view.source.kind === 'figure'
     return (
       <Result
         title={view.title}
@@ -140,15 +151,36 @@ export function App() {
         results={view.results}
         unsure={view.unsure}
         onRetryWrong={(ids) => retry(ids, view.source)}
-        onNextSet={fromMap ? undefined : () => start(view.source, view.items.map((it) => it.question.id))}
+        onNextSet={fromMap || fromFig ? undefined : () => start(view.source, view.items.map((it) => it.question.id))}
         onHome={() => leave(view.source)}
-        homeLabel={fromMap ? '用語マップに戻る' : 'ホームに戻る'}
+        homeLabel={fromMap ? '用語マップに戻る' : fromFig ? '図解に戻る' : 'ホームに戻る'}
       />
     )
   }
 
   if (view.kind === 'log') {
     return <StudyLogView log={log} onBack={() => setView({ kind: 'home' })} />
+  }
+
+  if (view.kind === 'figs') {
+    return <FigureList onOpen={(id) => setView({ kind: 'fig', id })} onBack={() => setView({ kind: 'home' })} />
+  }
+
+  if (view.kind === 'fig') {
+    const figure = figureOf(view.id)
+    if (figure) {
+      return (
+        <FigureView
+          key={figure.id}
+          figure={figure}
+          onBack={() => setView({ kind: 'figs' })}
+          backLabel="図解の一覧に戻る"
+          onQuiz={() =>
+            start({ kind: 'figure', figureId: figure.id, label: figure.title, ids: figure.questionIds })
+          }
+        />
+      )
+    }
   }
 
   if (view.kind === 'maps') {
@@ -184,6 +216,7 @@ export function App() {
       onStart={(source) => start(source)}
       onOpenLog={() => setView({ kind: 'log' })}
       onOpenMaps={() => setView({ kind: 'maps' })}
+      onOpenFigures={() => setView({ kind: 'figs' })}
       onReset={() => setProgress(resetProgress())}
     />
   )

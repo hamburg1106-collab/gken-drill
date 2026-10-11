@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { CATEGORIES } from '../data'
 import { ANALOGIES } from '../data/analogies'
+import { figureForQuestion } from '../figures'
+import { FigureOverlay } from './FigureView'
 import type { QuizItem } from '../lib/quiz'
 
 type Props = {
@@ -19,6 +21,7 @@ export function Quiz({ title, items, onAnswer, onUnsure, onFinish, onQuit }: Pro
   const [selected, setSelected] = useState<number | null>(null)
   const [results, setResults] = useState<boolean[]>([])
   const [unsure, setUnsure] = useState<boolean[]>([])
+  const [figOpen, setFigOpen] = useState(false)
   const feedbackRef = useRef<HTMLDivElement>(null)
 
   // 選択肢が長いと解説が画面外に出るので、解答したら解説の先頭まで送る
@@ -36,6 +39,7 @@ export function Quiz({ title, items, onAnswer, onUnsure, onFinish, onQuit }: Pro
   const answered = selected !== null
   const isLast = index === items.length - 1
   const isUnsure = unsure[index] ?? false
+  const figure = figureForQuestion(question.id)
 
   function choose(i: number) {
     if (selected !== null) return
@@ -145,6 +149,12 @@ export function Quiz({ title, items, onAnswer, onUnsure, onFinish, onQuit }: Pro
             </div>
           )}
 
+          {figure && (
+            <button className="fig-open" onClick={() => setFigOpen(true)}>
+              ▶ 動く図解で見る：{figure.title}
+            </button>
+          )}
+
           <div className="others">
             <h3>他の選択肢</h3>
             <ul>
@@ -164,6 +174,8 @@ export function Quiz({ title, items, onAnswer, onUnsure, onFinish, onQuit }: Pro
           </button>
         </div>
       )}
+
+      {figOpen && figure && <FigureOverlay figure={figure} onClose={() => setFigOpen(false)} />}
     </div>
   )
 }
