@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { CATEGORIES } from '../data'
+import { ANALOGIES } from '../data/analogies'
 import type { QuizItem } from '../lib/quiz'
 
 type Props = {
@@ -136,6 +137,13 @@ export function Quiz({ title, items, onAnswer, onUnsure, onFinish, onQuit }: Pro
           )}
 
           <p className="explain">{choices[answerIndex]?.note}</p>
+
+          {ANALOGIES[question.id] && (
+            <div className="analogy">
+              <p className="analogy-head">💡 たとえると</p>
+              <p className="analogy-body">{ANALOGIES[question.id]}</p>
+            </div>
+          )}
 
           <div className="others">
             <h3>他の選択肢</h3>

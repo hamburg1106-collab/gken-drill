@@ -1122,6 +1122,29 @@ button {
   background: var(--surface-2);
 }
 
+/* ---------- たとえ解説 ---------- */
+
+.analogy {
+  margin: 12px 0 4px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border-left: 3px solid var(--warn);
+  background: var(--surface-2);
+}
+
+.analogy-head {
+  margin: 0 0 2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--warn);
+}
+
+.analogy-body {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
 /* ---------- 自信なし ---------- */
 
 .unsure-toggle {
