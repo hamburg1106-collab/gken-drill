@@ -1167,6 +1167,190 @@ button {
   color: var(--text);
 }
 
+/* ---------- 苦手問題・要確認の問題 ---------- */
+
+.card-weak {
+  border-color: #6b3b2e;
+}
+
+.card-check {
+  border-color: #5c4d1f;
+}
+
+.weak .lede,
+.checks .lede {
+  margin-top: 6px;
+}
+
+.weak-summary {
+  margin: 14px 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.weak-summary h2 {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.weak-summary ul {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+}
+
+.weak-summary li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.weak-start {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.qcards {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.qcard {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border);
+  background: var(--surface);
+}
+
+.qcard-wrong {
+  border-left-color: var(--wrong);
+}
+
+.qcard-unsure,
+.qcard-check {
+  border-left-color: var(--warn);
+}
+
+.qcard-ok {
+  border-left-color: var(--correct);
+}
+
+.qcard-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.qcard-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 6px;
+}
+
+.qcard-count {
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.qcard-q {
+  font-size: 14px;
+  line-height: 1.6;
+  cursor: pointer;
+}
+
+.qcard-body {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.qcard-note {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.qcard-body .analogy {
+  margin: 0;
+}
+
+.qcard-others {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.qcard-others li {
+  display: grid;
+  gap: 1px;
+  font-size: 12px;
+}
+
+.check-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 14px 0 6px;
+  font-size: 14px;
+}
+
+.check-filter {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.check-section h2 {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+  margin: 22px 0 8px;
+}
+
+.check-toggle {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.check-toggle.on {
+  border-color: var(--correct);
+  color: var(--correct);
+}
+
+.checks .note {
+  margin-top: 20px;
+}
+
 /* ---------- 動く図解 ---------- */
 
 .fig-open {

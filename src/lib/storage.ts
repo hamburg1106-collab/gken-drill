@@ -87,6 +87,24 @@ export function unsureIds(progress: Progress): string[] {
   })
 }
 
+/** 苦手とみなす通算の不正解回数 */
+export const WEAK_MIN_WRONG = 2
+
+/**
+ * 苦手問題（通算で WEAK_MIN_WRONG 回以上間違えた問題）を、間違えた回数の多い順に返す。
+ * 回数が同じなら、正解の割合が低い方を先にする。直近の正誤は問わない（一度正解しても、何度も間違えた問題は残す）
+ */
+export function weakIds(progress: Progress): string[] {
+  return Object.keys(progress)
+    .filter((id) => (progress[id]?.wrong ?? 0) >= WEAK_MIN_WRONG)
+    .sort((a, b) => {
+      const sa = progress[a]!
+      const sb = progress[b]!
+      if (sb.wrong !== sa.wrong) return sb.wrong - sa.wrong
+      return sa.correct / (sa.correct + sa.wrong) - sb.correct / (sb.correct + sb.wrong)
+    })
+}
+
 /** 復習の対象（間違えたまま＋自信なし） */
 export function reviewIds(progress: Progress): string[] {
   return [...wrongIds(progress), ...unsureIds(progress)]

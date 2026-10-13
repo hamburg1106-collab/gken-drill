@@ -3,7 +3,8 @@ import { TERM_MAPS } from '../data/maps'
 import { FIGURES } from '../figures'
 import { Countdown } from './Countdown'
 import type { Progress } from '../lib/storage'
-import { accuracyOf, unsureIds, wrongIds } from '../lib/storage'
+import { loadChecked } from '../lib/checked'
+import { WEAK_MIN_WRONG, accuracyOf, unsureIds, weakIds, wrongIds } from '../lib/storage'
 import type { Source } from '../lib/source'
 import type { StudyLog } from '../lib/studyLog'
 import { formatDuration, todayOf } from '../lib/studyLog'
@@ -15,6 +16,8 @@ type Props = {
   onOpenLog: () => void
   onOpenMaps: () => void
   onOpenFigures: () => void
+  onOpenWeak: () => void
+  onOpenChecks: () => void
   onReset: () => void
 }
 
@@ -29,13 +32,26 @@ function Bar({ answered, correct, total }: { answered: number; correct: number; 
   )
 }
 
-export function Home({ progress, log, onStart, onOpenLog, onOpenMaps, onOpenFigures, onReset }: Props) {
+export function Home({
+  progress,
+  log,
+  onStart,
+  onOpenLog,
+  onOpenMaps,
+  onOpenFigures,
+  onOpenWeak,
+  onOpenChecks,
+  onReset,
+}: Props) {
   const allIds = ALL_QUESTIONS.map((q) => q.id)
   const total = accuracyOf(progress, allIds)
   const wrong = wrongIds(progress)
   const unsure = unsureIds(progress)
   const review = wrong.length + unsure.length
   const today = todayOf(log)
+  const weak = weakIds(progress).length
+  const checkTotal = ALL_QUESTIONS.filter((q) => q.needsCheck).length
+  const checkDone = loadChecked().size
 
   return (
     <div className="screen home">
@@ -65,6 +81,22 @@ export function Home({ progress, log, onStart, onOpenLog, onOpenMaps, onOpenFigu
             {review === 0
               ? '対象なし（自信を持って正解すればリストから外れます）'
               : `間違い ${wrong.length}問 ／ 自信なし ${unsure.length}問`}
+          </span>
+        </button>
+
+        <button className="card card-weak" onClick={onOpenWeak}>
+          <span className="card-title">苦手問題</span>
+          <span className="card-sub">
+            {weak === 0
+              ? `${WEAK_MIN_WRONG}回以上間違えた問題がここにたまります`
+              : `${weak}問 ／ 何度も間違えた順。テキストを読み直す目安に`}
+          </span>
+        </button>
+
+        <button className="card card-check" onClick={onOpenChecks}>
+          <span className="card-title">要確認の問題</span>
+          <span className="card-sub">
+            ⚠ 年号・数値・法令などを含む{checkTotal}問 ／ 確認済み {Math.min(checkDone, checkTotal)}問
           </span>
         </button>
 

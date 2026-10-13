@@ -8,9 +8,10 @@ import { SET_SIZE, buildSet, buildSetFromIds } from './lib/quiz'
 import type { Source } from './lib/source'
 import { labelOf, poolOf } from './lib/source'
 import type { Progress } from './lib/storage'
-import { loadProgress, markUnsure, recordAnswer, resetProgress, reviewIds } from './lib/storage'
+import { loadProgress, markUnsure, recordAnswer, resetProgress, reviewIds, weakIds } from './lib/storage'
 import type { StudyLog } from './lib/studyLog'
 import { loadLog, recordStudy, refreshReach } from './lib/studyLog'
+import { CheckList } from './screens/CheckList'
 import { FigureList } from './screens/FigureList'
 import { FigureView } from './screens/FigureView'
 import { Home } from './screens/Home'
@@ -19,10 +20,13 @@ import { Quiz } from './screens/Quiz'
 import { Result } from './screens/Result'
 import { StudyLogView } from './screens/StudyLogView'
 import { TermMapView } from './screens/TermMapView'
+import { WeakList } from './screens/WeakList'
 
 type View =
   | { kind: 'home' }
   | { kind: 'log' }
+  | { kind: 'weak' }
+  | { kind: 'checks' }
   | { kind: 'maps' }
   | { kind: 'map'; id: string }
   | { kind: 'figs' }
@@ -47,6 +51,7 @@ export function App() {
   function leave(source: Source) {
     if (source.kind === 'term' && lastMapId) setView({ kind: 'map', id: lastMapId })
     else if (source.kind === 'figure') setView({ kind: 'fig', id: source.figureId })
+    else if (source.kind === 'weak') setView({ kind: 'weak' })
     else setView({ kind: 'home' })
   }
 
@@ -58,6 +63,8 @@ export function App() {
         case 'maps':
         case 'figs':
         case 'log':
+        case 'weak':
+        case 'checks':
           setView({ kind: 'home' })
           break
         case 'map':
@@ -83,7 +90,9 @@ export function App() {
     const items =
       source.kind === 'wrong'
         ? buildSetFromIds(pool, reviewIds(progress))
-        : buildSet(pool, progress, SET_SIZE, exclude)
+        : source.kind === 'weak'
+          ? buildSetFromIds(pool, weakIds(progress).slice(0, SET_SIZE))
+          : buildSet(pool, progress, SET_SIZE, exclude)
     if (items.length === 0) {
       setView({ kind: 'home' })
       return
@@ -144,6 +153,8 @@ export function App() {
   if (view.kind === 'result') {
     const fromMap = view.source.kind === 'term' && !!lastMapId
     const fromFig = view.source.kind === 'figure'
+    // 苦手問題は毎回「上位10問」なので、次の10問へ進んでも同じ問題が出やすい。一覧に戻す
+    const fromWeak = view.source.kind === 'weak'
     return (
       <Result
         title={view.title}
@@ -151,15 +162,25 @@ export function App() {
         results={view.results}
         unsure={view.unsure}
         onRetryWrong={(ids) => retry(ids, view.source)}
-        onNextSet={fromMap || fromFig ? undefined : () => start(view.source, view.items.map((it) => it.question.id))}
+        onNextSet={
+          fromMap || fromFig || fromWeak ? undefined : () => start(view.source, view.items.map((it) => it.question.id))
+        }
         onHome={() => leave(view.source)}
-        homeLabel={fromMap ? '用語マップに戻る' : fromFig ? '図解に戻る' : 'ホームに戻る'}
+        homeLabel={fromMap ? '用語マップに戻る' : fromFig ? '図解に戻る' : fromWeak ? '苦手問題の一覧に戻る' : 'ホームに戻る'}
       />
     )
   }
 
   if (view.kind === 'log') {
     return <StudyLogView log={log} onBack={() => setView({ kind: 'home' })} />
+  }
+
+  if (view.kind === 'weak') {
+    return <WeakList progress={progress} onStart={() => start({ kind: 'weak' })} onBack={() => setView({ kind: 'home' })} />
+  }
+
+  if (view.kind === 'checks') {
+    return <CheckList onBack={() => setView({ kind: 'home' })} />
   }
 
   if (view.kind === 'figs') {
@@ -217,6 +238,8 @@ export function App() {
       onOpenLog={() => setView({ kind: 'log' })}
       onOpenMaps={() => setView({ kind: 'maps' })}
       onOpenFigures={() => setView({ kind: 'figs' })}
+      onOpenWeak={() => setView({ kind: 'weak' })}
+      onOpenChecks={() => setView({ kind: 'checks' })}
       onReset={() => setProgress(resetProgress())}
     />
   )
