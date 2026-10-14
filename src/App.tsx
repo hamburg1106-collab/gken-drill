@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { ALL_QUESTIONS } from './data'
+import { isExcluded, setExcluded } from './lib/excluded'
 import { TERM_MAPS } from './data/maps'
 import { figureOf } from './figures'
 import { listenBack, setGuard } from './lib/backButton'
@@ -12,6 +13,7 @@ import { loadProgress, markUnsure, recordAnswer, resetProgress, reviewIds, weakI
 import type { StudyLog } from './lib/studyLog'
 import { loadLog, recordStudy, refreshReach } from './lib/studyLog'
 import { CheckList } from './screens/CheckList'
+import { ExcludedList } from './screens/ExcludedList'
 import { FigureList } from './screens/FigureList'
 import { FigureView } from './screens/FigureView'
 import { Home } from './screens/Home'
@@ -27,6 +29,7 @@ type View =
   | { kind: 'log' }
   | { kind: 'weak' }
   | { kind: 'checks' }
+  | { kind: 'excluded' }
   | { kind: 'maps' }
   | { kind: 'map'; id: string }
   | { kind: 'figs' }
@@ -39,6 +42,8 @@ export function App() {
   const [log, setLog] = useState<StudyLog>(() => loadLog())
   const [view, setView] = useState<View>({ kind: 'home' })
   const [seq, setSeq] = useState(0)
+  // 出題しない問題は lib/excluded が持つので、切り替えたら描き直すためだけの番号
+  const [, setExcludedVersion] = useState(0)
   // 用語マップから問題に入ったとき、解き終えたらその図に戻れるようにする
   const [lastMapId, setLastMapId] = useState<string | null>(null)
 
@@ -65,6 +70,7 @@ export function App() {
         case 'log':
         case 'weak':
         case 'checks':
+        case 'excluded':
           setView({ kind: 'home' })
           break
         case 'map':
@@ -104,7 +110,11 @@ export function App() {
 
   /** 誤答のやり直し。source は引き継ぎ、この後の「次の10問へ」が元の出題元に戻るようにする */
   function retry(ids: string[], source: Source) {
-    const items = buildSetFromIds(ALL_QUESTIONS, ids, ids.length)
+    const items = buildSetFromIds(
+      ALL_QUESTIONS.filter((q) => !isExcluded(q.id)),
+      ids,
+      ids.length,
+    )
     if (items.length === 0) {
       setView({ kind: 'home' })
       return
@@ -127,6 +137,13 @@ export function App() {
     setLog(refreshReach(log, next))
   }
 
+  /** 出題対象が変わると到達度の分母も変わるので、今日の記録も更新する */
+  function handleExclude(id: string, excluded: boolean) {
+    setExcluded(id, excluded)
+    setExcludedVersion((v) => v + 1)
+    setLog(refreshReach(log, progress))
+  }
+
   if (view.kind === 'quiz') {
     return (
       <Quiz
@@ -135,6 +152,8 @@ export function App() {
         items={view.items}
         onAnswer={handleAnswer}
         onUnsure={handleUnsure}
+        onExclude={handleExclude}
+        isExcluded={isExcluded}
         onFinish={(results, unsure) =>
           setView({
             kind: 'result',
@@ -177,6 +196,10 @@ export function App() {
 
   if (view.kind === 'weak') {
     return <WeakList progress={progress} onStart={() => start({ kind: 'weak' })} onBack={() => setView({ kind: 'home' })} />
+  }
+
+  if (view.kind === 'excluded') {
+    return <ExcludedList onRestore={(id) => handleExclude(id, false)} onBack={() => setView({ kind: 'home' })} />
   }
 
   if (view.kind === 'checks') {
@@ -240,6 +263,7 @@ export function App() {
       onOpenFigures={() => setView({ kind: 'figs' })}
       onOpenWeak={() => setView({ kind: 'weak' })}
       onOpenChecks={() => setView({ kind: 'checks' })}
+      onOpenExcluded={() => setView({ kind: 'excluded' })}
       onReset={() => setProgress(resetProgress())}
     />
   )

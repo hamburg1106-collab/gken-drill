@@ -11,12 +11,15 @@ type Props = {
   onAnswer: (id: string, correct: boolean) => void
   /** 正解した問題に「勘だった（自信なし）」を付ける・外す */
   onUnsure: (id: string, unsure: boolean) => void
+  /** 「テキストにない」問題を以後の出題から外す・戻す */
+  onExclude: (id: string, excluded: boolean) => void
+  isExcluded: (id: string) => boolean
   /** unsure は results と同じ並びで、自信なしを付けたかどうか */
   onFinish: (results: boolean[], unsure: boolean[]) => void
   onQuit: () => void
 }
 
-export function Quiz({ title, items, onAnswer, onUnsure, onFinish, onQuit }: Props) {
+export function Quiz({ title, items, onAnswer, onUnsure, onExclude, isExcluded, onFinish, onQuit }: Props) {
   const [index, setIndex] = useState(0)
   const [selected, setSelected] = useState<number | null>(null)
   const [results, setResults] = useState<boolean[]>([])
@@ -171,6 +174,16 @@ export function Quiz({ title, items, onAnswer, onUnsure, onFinish, onQuit }: Pro
 
           <button className="next" onClick={next}>
             {isLast ? '結果を見る' : '次の問題へ'}
+          </button>
+
+          <button
+            className={`exclude-toggle${isExcluded(question.id) ? ' on' : ''}`}
+            aria-pressed={isExcluded(question.id)}
+            onClick={() => onExclude(question.id, !isExcluded(question.id))}
+          >
+            {isExcluded(question.id)
+              ? '🚫 今後は出題しません（ホーム下の一覧から戻せます）・取り消す'
+              : '🚫 テキストにない問題（今後は出さない）'}
           </button>
         </div>
       )}

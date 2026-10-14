@@ -1351,6 +1351,48 @@ button {
   margin-top: 20px;
 }
 
+/* ---------- 出題しない問題 ---------- */
+
+.exclude-toggle {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding: 8px 4px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.exclude-toggle.on {
+  color: var(--warn);
+}
+
+.link-plain {
+  display: block;
+  margin-bottom: 12px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 13px;
+  text-decoration: underline;
+}
+
+.restore {
+  flex: none;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  background: none;
+  color: var(--accent);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
 /* ---------- 動く図解 ---------- */
 
 .fig-open {

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { ALL_QUESTIONS } from '../data'
+import { activeQuestions } from '../lib/excluded'
 import type { EdgeType, MapEdge, MapNode, TermMap } from '../data/mapTypes'
 import { EDGE_TYPE_LABEL } from '../data/mapTypes'
 import type { Box, EdgeGeom } from '../lib/mapLayout'
@@ -104,7 +104,7 @@ export function TermMapView({ map, onBack, onQuiz }: Props) {
   }, [map, selected])
 
   const node = selected ? nodeIndex.get(selected) : undefined
-  const related = node ? relatedQuestionIds(node, ALL_QUESTIONS) : []
+  const related = node ? relatedQuestionIds(node, activeQuestions()) : []
   const nodeEdges = node ? map.edges.filter((e) => e.from === node.id || e.to === node.id) : []
 
   return (

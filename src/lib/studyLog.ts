@@ -1,4 +1,5 @@
-import { ALL_QUESTIONS, CATEGORIES } from '../data'
+import { CATEGORIES } from '../data'
+import { activeQuestions } from './excluded'
 import type { Accuracy, Progress } from './storage'
 import { accuracyOf } from './storage'
 
@@ -24,6 +25,15 @@ export type Day = {
   reach: Accuracy
   /** 同じく分野別の到達度 */
   reachByCategory: Record<string, Accuracy>
+  /** 到達度の分母（その日の出題対象の問題数）。問題の追加や「出題しない」設定で変わるため日ごとに持つ */
+  total?: number
+}
+
+/** total を持たない古い記録（2026-10-14 まで）の分母。当時の全問題数 */
+const LEGACY_TOTAL = 233
+
+export function totalOf(day: Day): number {
+  return day.total ?? LEGACY_TOTAL
 }
 
 /** 日付の昇順 */
@@ -77,19 +87,20 @@ export function recordStudy(log: StudyLog, correct: boolean, progress: Progress,
   return next
 }
 
-function reachOf(progress: Progress): Pick<Day, 'reach' | 'reachByCategory'> {
+function reachOf(progress: Progress): Pick<Day, 'reach' | 'reachByCategory' | 'total'> {
+  const active = activeQuestions()
   const reach = accuracyOf(
     progress,
-    ALL_QUESTIONS.map((q) => q.id),
+    active.map((q) => q.id),
   )
   const reachByCategory: Record<string, Accuracy> = {}
   for (const c of CATEGORIES) {
     reachByCategory[c.id] = accuracyOf(
       progress,
-      ALL_QUESTIONS.filter((q) => q.category === c.id).map((q) => q.id),
+      active.filter((q) => q.category === c.id).map((q) => q.id),
     )
   }
-  return { reach, reachByCategory }
+  return { reach, reachByCategory, total: active.length }
 }
 
 /** 「自信なし」の付け外しなど、解答数は変えずに到達度だけ変わったときに今日の行を更新する */
@@ -133,17 +144,16 @@ function pct(n: number, total: number): number {
 
 /** draft/gken-doc/記録.md の表にそのまま貼れる行 */
 export function toMarkdown(log: StudyLog): string {
-  const total = ALL_QUESTIONS.length
   return log
     .map(
       (d) =>
-        `| ${shortDate(d.date)} | ${formatDuration(d.studyMs)} | ${pct(d.correct, d.answers)}%（到達度 ${pct(d.reach.correct, total)}%${d.reach.unsure ? `・自信なし ${d.reach.unsure}問` : ''}） | ${d.answers} |  |  |`,
+        `| ${shortDate(d.date)} | ${formatDuration(d.studyMs)} | ${pct(d.correct, d.answers)}%（到達度 ${pct(d.reach.correct, totalOf(d))}%${d.reach.unsure ? `・自信なし ${d.reach.unsure}問` : ''}） | ${d.answers} |  |  |`,
     )
     .join('\n')
 }
 
 export function toCsv(log: StudyLog): string {
-  const total = ALL_QUESTIONS.length
+  const active = activeQuestions()
   const head = [
     '日付',
     '勉強時間(分)',
@@ -163,14 +173,15 @@ export function toCsv(log: StudyLog): string {
     d.answers,
     d.correct,
     pct(d.correct, d.answers),
-    pct(d.reach.correct, total),
-    pct(sureOf(d.reach), total),
+    pct(d.reach.correct, totalOf(d)),
+    pct(sureOf(d.reach), totalOf(d)),
     d.reach.correct,
     d.reach.unsure ?? 0,
     d.reach.answered,
     ...CATEGORIES.map((c) => {
       const acc = d.reachByCategory[c.id]
-      const size = ALL_QUESTIONS.filter((q) => q.category === c.id).length
+      // 分野別の分母は日ごとには持っていないので、今の出題対象の数で割る（目安）
+      const size = active.filter((q) => q.category === c.id).length
       return acc ? pct(acc.correct, size) : ''
     }),
   ])

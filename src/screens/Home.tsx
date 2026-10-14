@@ -1,4 +1,5 @@
-import { ALL_QUESTIONS, CATEGORIES } from '../data'
+import { CATEGORIES } from '../data'
+import { activeQuestions, excludedQuestions } from '../lib/excluded'
 import { TERM_MAPS } from '../data/maps'
 import { FIGURES } from '../figures'
 import { Countdown } from './Countdown'
@@ -18,6 +19,7 @@ type Props = {
   onOpenFigures: () => void
   onOpenWeak: () => void
   onOpenChecks: () => void
+  onOpenExcluded: () => void
   onReset: () => void
 }
 
@@ -41,29 +43,36 @@ export function Home({
   onOpenFigures,
   onOpenWeak,
   onOpenChecks,
+  onOpenExcluded,
   onReset,
 }: Props) {
-  const allIds = ALL_QUESTIONS.map((q) => q.id)
-  const total = accuracyOf(progress, allIds)
+  // 出題しない問題は、問題数にも到達度にも数えない
+  const active = activeQuestions()
+  const excludedCount = excludedQuestions().length
+  const total = accuracyOf(
+    progress,
+    active.map((q) => q.id),
+  )
   const wrong = wrongIds(progress)
   const unsure = unsureIds(progress)
   const review = wrong.length + unsure.length
   const today = todayOf(log)
   const weak = weakIds(progress).length
-  const checkTotal = ALL_QUESTIONS.filter((q) => q.needsCheck).length
-  const checkDone = loadChecked().size
+  const checkQs = active.filter((q) => q.needsCheck)
+  const checked = loadChecked()
+  const checkDone = checkQs.filter((q) => checked.has(q.id)).length
 
   return (
     <div className="screen home">
       <header className="home-head">
         <h1>G検定 1問1答</h1>
         <p className="lede">
-          全{ALL_QUESTIONS.length}問 ／ 解答済み {total.answered}問 ／ 直近正解 {total.correct}問
+          全{active.length}問 ／ 解答済み {total.answered}問 ／ 直近正解 {total.correct}問
         </p>
-        <Bar answered={total.answered} correct={total.correct} total={ALL_QUESTIONS.length} />
+        <Bar answered={total.answered} correct={total.correct} total={active.length} />
       </header>
 
-      <Countdown remaining={ALL_QUESTIONS.length - total.answered + review} />
+      <Countdown remaining={active.length - total.answered + review} />
 
       <section className="menu">
         <button className="card card-primary" onClick={() => onStart({ kind: 'all' })}>
@@ -96,7 +105,7 @@ export function Home({
         <button className="card card-check" onClick={onOpenChecks}>
           <span className="card-title">要確認の問題</span>
           <span className="card-sub">
-            ⚠ 年号・数値・法令などを含む{checkTotal}問 ／ 確認済み {Math.min(checkDone, checkTotal)}問
+            ⚠ 年号・数値・法令などを含む{checkQs.length}問 ／ 確認済み {checkDone}問
           </span>
         </button>
 
@@ -125,7 +134,7 @@ export function Home({
       <section className="categories">
         <h2>分野別</h2>
         {CATEGORIES.map((c) => {
-          const ids = ALL_QUESTIONS.filter((q) => q.category === c.id).map((q) => q.id)
+          const ids = active.filter((q) => q.category === c.id).map((q) => q.id)
           const acc = accuracyOf(progress, ids)
           return (
             <button key={c.id} className="row" onClick={() => onStart({ kind: 'category', id: c.id })}>
@@ -142,6 +151,9 @@ export function Home({
       </section>
 
       <footer className="home-foot">
+        <button className="link-plain" onClick={onOpenExcluded}>
+          出題しない問題（{excludedCount}問）
+        </button>
         <button
           className="link-danger"
           onClick={() => {

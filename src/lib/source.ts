@@ -1,5 +1,6 @@
-import { ALL_QUESTIONS, CATEGORIES } from '../data'
+import { CATEGORIES } from '../data'
 import type { CategoryId, Question } from '../data'
+import { activeQuestions } from './excluded'
 
 export type Source =
   | { kind: 'all' }
@@ -29,18 +30,20 @@ export function labelOf(source: Source): string {
   }
 }
 
+/** 出題の候補。出題しない問題はここで外す */
 export function poolOf(source: Source): Question[] {
+  const active = activeQuestions()
   switch (source.kind) {
     case 'all':
     case 'wrong':
     case 'weak':
-      return ALL_QUESTIONS
+      return active
     case 'category':
-      return ALL_QUESTIONS.filter((q) => q.category === source.id)
+      return active.filter((q) => q.category === source.id)
     case 'term':
     case 'figure': {
       const ids = new Set(source.ids)
-      return ALL_QUESTIONS.filter((q) => ids.has(q.id))
+      return active.filter((q) => ids.has(q.id))
     }
   }
 }

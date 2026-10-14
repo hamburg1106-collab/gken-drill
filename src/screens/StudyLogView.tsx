@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { ALL_QUESTIONS } from '../data'
+import { activeQuestions } from '../lib/excluded'
 import type { StudyLog } from '../lib/studyLog'
-import { dateKey, formatDuration, shortDate, sureOf, toCsv, toMarkdown } from '../lib/studyLog'
+import { dateKey, formatDuration, shortDate, sureOf, toCsv, toMarkdown, totalOf } from '../lib/studyLog'
 
 type Props = {
   log: StudyLog
@@ -93,14 +93,13 @@ function XLabels({ log, x, height }: { log: StudyLog; x: (date: string) => numbe
 function ReachChart({ log, selected, onSelect }: ChartProps) {
   const [ref, width] = useWidth<HTMLDivElement>()
   const height = 170
-  const total = ALL_QUESTIONS.length
   const innerH = height - PAD.top - PAD.bottom
   // 右端に系列名を直接置くので、右側の余白を広く取る
   const { x } = useXScale(log, width, LABEL_W)
   const y = (pct: number) => PAD.top + innerH * (1 - pct / 100)
   // 上の線：勘を含む正解、下の線：自信ありの正解。2本の間の帯が「勘・雰囲気」
-  const allY = log.map((d) => y((d.reach.correct / total) * 100))
-  const sureY = log.map((d) => y((sureOf(d.reach) / total) * 100))
+  const allY = log.map((d) => y((d.reach.correct / totalOf(d)) * 100))
+  const sureY = log.map((d) => y((sureOf(d.reach) / totalOf(d)) * 100))
   const xs = log.map((d) => x(d.date))
   const line = (ys: number[]) => xs.map((px, i) => `${px},${ys[i]}`).join(' ')
   const band = [...xs.map((px, i) => `${px},${allY[i]}`), ...[...xs].reverse().map((px, i) => `${px},${sureY[xs.length - 1 - i]}`)].join(' ')
@@ -234,7 +233,8 @@ function download(filename: string, text: string) {
 export function StudyLogView({ log, onBack }: Props) {
   const [selected, setSelected] = useState(log.length - 1)
   const [copied, setCopied] = useState(false)
-  const total = ALL_QUESTIONS.length
+  // 今の出題対象の数（説明文用）。日ごとの到達度は、その日の分母で計算する
+  const total = activeQuestions().length
 
   const head = (
     <header className="sub-head">
@@ -259,7 +259,7 @@ export function StudyLogView({ log, onBack }: Props) {
   const totalMs = log.reduce((s, d) => s + d.studyMs, 0)
   const totalAnswers = log.reduce((s, d) => s + d.answers, 0)
   const first = log[0]!
-  const reachPct = (d: (typeof log)[number]) => Math.round((d.reach.correct / total) * 100)
+  const reachPct = (d: (typeof log)[number]) => Math.round((d.reach.correct / totalOf(d)) * 100)
 
   async function copy() {
     try {
@@ -299,7 +299,7 @@ export function StudyLogView({ log, onBack }: Props) {
 
       <p className="readout" aria-live="polite">
         <strong>{shortDate(sel.date)}</strong>
-        {sel.date === dateKey(Date.now()) && '（今日）'}　到達度 {reachPct(sel)}%（{sel.reach.correct}/{total}問）・
+        {sel.date === dateKey(Date.now()) && '（今日）'}　到達度 {reachPct(sel)}%（{sel.reach.correct}/{totalOf(sel)}問）・
         {sel.answers}問・正解率 {Math.round((sel.correct / sel.answers) * 100)}%・{formatDuration(sel.studyMs)}
         {(sel.reach.unsure ?? 0) > 0 && `・自信なし ${sel.reach.unsure}問`}
       </p>

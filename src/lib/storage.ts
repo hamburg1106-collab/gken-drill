@@ -1,3 +1,5 @@
+import { isExcluded } from './excluded'
+
 const KEY = 'gken-drill/progress/v1'
 
 export type Stat = {
@@ -74,14 +76,19 @@ export function resetProgress(): Progress {
   return {}
 }
 
+/** 記録のある問題ID（出題しない問題は除く） */
+function recordedIds(progress: Progress): string[] {
+  return Object.keys(progress).filter((id) => !isExcluded(id))
+}
+
 /** 直近で間違えたままの問題ID */
 export function wrongIds(progress: Progress): string[] {
-  return Object.keys(progress).filter((id) => progress[id]?.lastWrong)
+  return recordedIds(progress).filter((id) => progress[id]?.lastWrong)
 }
 
 /** 直近の正解に「自信なし」が付いている問題ID */
 export function unsureIds(progress: Progress): string[] {
-  return Object.keys(progress).filter((id) => {
+  return recordedIds(progress).filter((id) => {
     const s = progress[id]
     return !!s && !s.lastWrong && !!s.lastUnsure
   })
@@ -95,7 +102,7 @@ export const WEAK_MIN_WRONG = 2
  * 回数が同じなら、正解の割合が低い方を先にする。直近の正誤は問わない（一度正解しても、何度も間違えた問題は残す）
  */
 export function weakIds(progress: Progress): string[] {
-  return Object.keys(progress)
+  return recordedIds(progress)
     .filter((id) => (progress[id]?.wrong ?? 0) >= WEAK_MIN_WRONG)
     .sort((a, b) => {
       const sa = progress[a]!

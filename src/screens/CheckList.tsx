@@ -1,15 +1,16 @@
 import { useState } from 'react'
-import { ALL_QUESTIONS, CATEGORIES } from '../data'
+import { CATEGORIES } from '../data'
 import { loadChecked, toggleChecked } from '../lib/checked'
+import { activeQuestions } from '../lib/excluded'
 import { QuestionCard } from './QuestionCard'
 
 type Props = {
   onBack: () => void
 }
 
-const NEEDS_CHECK = ALL_QUESTIONS.filter((q) => q.needsCheck)
-
 export function CheckList({ onBack }: Props) {
+  // 出題しない問題は確認する必要もないので並べない
+  const NEEDS_CHECK = activeQuestions().filter((q) => q.needsCheck)
   const [checked, setChecked] = useState(() => loadChecked())
   const [hideDone, setHideDone] = useState(false)
   const done = NEEDS_CHECK.filter((q) => checked.has(q.id)).length
