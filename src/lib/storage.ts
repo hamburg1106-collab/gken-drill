@@ -1,4 +1,4 @@
-import { isExcluded } from './excluded'
+import { activeQuestions } from './excluded'
 
 const KEY = 'gken-drill/progress/v1'
 
@@ -76,9 +76,10 @@ export function resetProgress(): Progress {
   return {}
 }
 
-/** 記録のある問題ID（出題しない問題は除く） */
+/** 記録のある問題ID（出題しない問題と、収録から削除した問題は除く） */
 function recordedIds(progress: Progress): string[] {
-  return Object.keys(progress).filter((id) => !isExcluded(id))
+  const known = new Set(activeQuestions().map((q) => q.id))
+  return Object.keys(progress).filter((id) => known.has(id))
 }
 
 /** 直近で間違えたままの問題ID */
