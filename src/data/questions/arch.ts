@@ -605,21 +605,20 @@ export const arch: Question[] = [
   {
     id: 'a26',
     category: 'arch',
-    text: 'Vision Transformer（ViT）の仕組みとして正しいものはどれか。',
+    text: 'Vision Transformer（ViT）の説明として正しいものはどれか。',
     answer: 2,
-    needsCheck: true,
     choices: [
       {
         text: '畳み込み層を深く重ねて画像を分類する',
-        note: 'それは従来のCNNの構成である。ViTは畳み込みに依存しない。',
+        note: 'それは従来のCNNの構成である。ViTは畳み込み（CNN）を使わない。',
       },
       {
         text: '画像を1画素ずつRNNに入力して順に処理する',
-        note: '逐次処理は行わない。並列に扱える点がTransformerの利点である。',
+        note: 'RNNは使わない。画像全体をまとめて扱う。',
       },
       {
-        text: '画像を小さなパッチに分割し、それぞれをトークンとしてTransformerに入力する',
-        note: '単語の代わりにパッチを並べる発想。大規模なデータで事前学習すればCNNを上回る性能を示す一方、データが少ないとCNNに劣りやすい。',
+        text: '画像認識にCNNを使わず、自然言語処理で使われていたTransformerを用いる',
+        note: '「画像なのにCNNを使わない」のが最大の特徴。文章で成功したTransformerを画像にも応用した。',
       },
       {
         text: '生成器と識別器を競わせて画像を分類する',
@@ -673,31 +672,6 @@ export const arch: Question[] = [
       {
         text: '教師データを不要にした',
         note: '教師データは引き続き必要である。',
-      },
-    ],
-  },
-  {
-    id: 'a29',
-    category: 'arch',
-    text: '物体検出の評価に使われる「IoU」が表すものはどれか。',
-    answer: 1,
-    needsCheck: true,
-    choices: [
-      {
-        text: '検出した物体の数と実際の物体の数の比',
-        note: '個数の比ではなく、領域の重なり具合を測る指標である。',
-      },
-      {
-        text: '予測した矩形と正解の矩形の、重なり部分の面積を和集合の面積で割った値',
-        note: 'Intersection over Union。1に近いほど正確に囲めている。一定の閾値（0.5など）を超えた検出を正解とみなし、mAPなどの指標を算出する。',
-      },
-      {
-        text: '推論にかかった時間の逆数',
-        note: '速度の指標ではない。',
-      },
-      {
-        text: '分類の正解率',
-        note: '分類の正しさとは別に、位置の正確さを測るための指標である。',
       },
     ],
   },

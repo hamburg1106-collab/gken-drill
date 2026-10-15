@@ -3,14 +3,6 @@ import { useState } from 'react'
 // 活性化関数の形と傾き（微分）を並べて描き、「入力が x のときの傾き」を層の数だけ掛けたら
 // 勾配がどれだけ残るかを見せる。勾配消失は、1未満の傾きを何度も掛けることで起きる。
 
-const erf = (x: number) => {
-  // Abramowitz-Stegun 7.1.26 の近似（誤差は1e-7程度で、図には十分）
-  const t = 1 / (1 + 0.3275911 * Math.abs(x))
-  const y = 1 - ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x)
-  return x >= 0 ? y : -y
-}
-const phi = (x: number) => Math.exp(-(x * x) / 2) / Math.sqrt(2 * Math.PI)
-const Phi = (x: number) => 0.5 * (1 + erf(x / Math.SQRT2))
 const sig = (x: number) => 1 / (1 + Math.exp(-x))
 
 type Fn = { id: string; label: string; f: (x: number) => number; d: (x: number) => number; note: string }
@@ -43,13 +35,6 @@ const FNS: Fn[] = [
     f: (x) => (x > 0 ? x : 0.1 * x),
     d: (x) => (x > 0 ? 1 : 0.1),
     note: 'ReLUの負の側に小さな傾き（ここでは0.1）を残したもの。負の入力でも勾配が完全には0にならない。',
-  },
-  {
-    id: 'gelu',
-    label: 'GELU',
-    f: (x) => x * Phi(x),
-    d: (x) => Phi(x) + x * phi(x),
-    note: 'ReLUの折れ目を滑らかにしたような形。BERTやGPTなどTransformer系で使われる。',
   },
 ]
 

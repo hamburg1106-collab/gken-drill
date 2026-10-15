@@ -144,8 +144,6 @@ export const basicMaps: TermMap[] = [
       { id: 'stack', label: 'スタッキ\nング', col: 2, row: 1.4, def: '性質の異なる複数モデルの予測を入力にして、さらに別のモデルで最終予測を出す。', match: ['スタッキング'] },
       { id: 'rf', label: 'ランダム\nフォレスト', col: 0, row: 2.8, def: '決定木×バギング。使う特徴量もランダムに選び、木どうしの相関を下げる。', match: ['ランダムフォレスト'] },
       { id: 'gb', label: '勾配ブース\nティング', col: 1, row: 2.8, def: '決定木を1本ずつ追加し、残った誤差を埋めていく。', match: ['勾配ブースティング'] },
-      { id: 'xgb', label: 'XGBoost', col: 0.5, row: 4.2, def: '勾配ブースティングの代表的な実装。表形式データのコンペで定番。' },
-      { id: 'lgbm', label: 'LightGBM', col: 1.5, row: 4.2, def: '勾配ブースティングの実装。葉単位で木を成長させるため高速で、大規模データ向き。' },
     ],
     edges: [
       { from: 'ens', to: 'bag', type: 'include' },
@@ -154,8 +152,6 @@ export const basicMaps: TermMap[] = [
       { from: 'bag', to: 'boost', type: 'contrast', label: '並列↔直列' },
       { from: 'bag', to: 'rf', type: 'include' },
       { from: 'boost', to: 'gb', type: 'include' },
-      { from: 'gb', to: 'xgb', type: 'include' },
-      { from: 'gb', to: 'lgbm', type: 'include' },
     ],
   },
   {

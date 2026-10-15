@@ -49,7 +49,7 @@ export const FIGURES: Figure[] = [
     title: '活性化関数と勾配消失',
     summary: '関数ごとの形と傾き、層を重ねたときに残る勾配',
     category: 'dl',
-    questionIds: ['d02', 'd04', 'd05', 'd20', 'd21', 'd23', 'd25', 'd39', 'd44'],
+    questionIds: ['d02', 'd04', 'd05', 'd20', 'd21', 'd23', 'd25', 'd39'],
     Component: Activation,
   },
   {
