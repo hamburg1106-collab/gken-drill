@@ -117,7 +117,7 @@ export const deepMaps: TermMap[] = [
       { id: 'alex', label: 'AlexNet', col: 1, row: 1.4, def: '2012年のILSVRCで圧勝。ReLU・ドロップアウト・GPU利用。第3次AIブームの起点。' },
       { id: 'vgg', label: 'VGG', col: 0, row: 2.8, def: '3×3の小さいフィルタを深く重ねる。構造が単純で、転移学習の土台にも使われた。' },
       { id: 'goog', label: 'GoogLeNet', col: 2, row: 2.8, def: 'Inceptionモジュールで、サイズの違うフィルタを並列に適用。1×1畳み込みで計算量を抑える。', match: ['GoogLeNet', 'Inception'] },
-      { id: 'resnet', label: 'ResNet', col: 1, row: 4.2, def: 'スキップ結合で100層を超える深さを実現。2015年のILSVRCで優勝。層が学ぶのは入力との差分（残差）。浅く幅を広げた派生がWide ResNet。', match: ['ResNet'] },
+      { id: 'resnet', label: 'ResNet', col: 1, row: 4.2, def: 'スキップ結合で100層を超える深さを実現。2015年のILSVRCで優勝。層が学ぶのは入力との差分（残差）。浅くしてフィルタ数（幅）を増やした派生がWide ResNet。', match: ['ResNet'] },
       { id: 'dense', label: 'DenseNet', col: 0, row: 5.6, def: '前のすべての層の出力をチャンネル方向に「連結」して入力する。ResNetは「加算」、DenseNetは「連結」。' },
       { id: 'vit', label: 'Vision\nTransformer', col: 1, row: 7, def: '画像認識なのにCNN（畳み込み）を使わず、自然言語処理で使われていたTransformerで画像を扱う。', match: ['Vision Transformer', 'ViT'] },
       { id: 'senet', label: 'SENet', col: 2, row: 5.6, def: 'チャンネルごとの重要度を学習して重みを付け直す（Squeeze-and-Excitation）。2017年のILSVRCで優勝。' },
