@@ -942,7 +942,6 @@ export const ml: Question[] = [
     category: 'ml',
     text: 'サポートベクターマシンの考え方を回帰に応用した手法はどれか。',
     answer: 3,
-    needsCheck: true,
     choices: [
       {
         text: '主成分分析',
@@ -1087,7 +1086,6 @@ export const ml: Question[] = [
     category: 'ml',
     text: '自己組織化マップ（SOM）の説明として正しいものはどれか。',
     answer: 1,
-    needsCheck: true,
     choices: [
       {
         text: '正解ラベルを使い、入力を決まったクラスに振り分ける',
@@ -1112,7 +1110,6 @@ export const ml: Question[] = [
     category: 'ml',
     text: '文書の集まりから、各文書がどんな話題をどの程度含むかを推定する「トピックモデル」の代表的な手法はどれか。',
     answer: 2,
-    needsCheck: true,
     choices: [
       {
         text: '線形判別分析（LDA）',
@@ -1137,7 +1134,6 @@ export const ml: Question[] = [
     category: 'ml',
     text: '混合ガウスモデル（GMM）によるクラスタリングがk-means法と異なる点はどれか。',
     answer: 3,
-    needsCheck: true,
     choices: [
       {
         text: '正解ラベルが必要である',
@@ -1162,7 +1158,6 @@ export const ml: Question[] = [
     category: 'ml',
     text: '階層的クラスタリングで使われる「ウォード法」の考え方はどれか。',
     answer: 2,
-    needsCheck: true,
     choices: [
       {
         text: '最も遠い点同士の距離が近いクラスタから併合する',

@@ -654,7 +654,6 @@ export const dl: Question[] = [
     category: 'dl',
     text: '2006年頃にヒントンらが提案した、深い層の学習を可能にするために取られたアプローチはどれか。',
     answer: 2,
-    needsCheck: true,
     choices: [
       {
         text: '全層を一度にランダム初期化して学習する',

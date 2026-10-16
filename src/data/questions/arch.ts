@@ -582,7 +582,6 @@ export const arch: Question[] = [
     category: 'arch',
     text: 'VGGの設計方針として正しいものはどれか。',
     answer: 1,
-    needsCheck: true,
     choices: [
       {
         text: '大きなフィルタを1層だけ使って広い範囲を一度に捉える',
@@ -655,7 +654,6 @@ export const arch: Question[] = [
     category: 'arch',
     text: 'R-CNNからFaster R-CNNへの改良で達成されたことはどれか。',
     answer: 0,
-    needsCheck: true,
     choices: [
       {
         text: '領域候補の抽出もニューラルネットワーク内で行うようにして、処理を大幅に高速化した',
@@ -776,7 +774,6 @@ export const arch: Question[] = [
     category: 'arch',
     text: '音声認識で用いられる「メル尺度（メルスケール）」の考え方として正しいものはどれか。',
     answer: 1,
-    needsCheck: true,
     choices: [
       {
         text: '音の大きさを対数で表したもの',
@@ -825,7 +822,6 @@ export const arch: Question[] = [
     category: 'arch',
     text: 'DenseNetの特徴として正しいものはどれか。',
     answer: 1,
-    needsCheck: true,
     choices: [
       {
         text: '入力を数層先の出力に「足し算」で合流させる',
@@ -850,7 +846,6 @@ export const arch: Question[] = [
     category: 'arch',
     text: 'スマートフォンなど計算資源が限られた端末向けに、畳み込みを「深さ方向（depthwise）」と「点方向（pointwise）」に分けて計算量を大きく減らしたモデルはどれか。',
     answer: 3,
-    needsCheck: true,
     choices: [
       {
         text: 'VGG',
@@ -875,7 +870,6 @@ export const arch: Question[] = [
     category: 'arch',
     text: 'SENet（Squeeze-and-Excitation Network）が導入した仕組みはどれか。',
     answer: 2,
-    needsCheck: true,
     choices: [
       {
         text: '画像をパッチに分けてTransformerに入力する',
@@ -900,7 +894,6 @@ export const arch: Question[] = [
     category: 'arch',
     text: '2014年のILSVRCで優勝したモデルはどれか。',
     answer: 3,
-    needsCheck: true,
     choices: [
       {
         text: 'AlexNet',
@@ -949,7 +942,6 @@ export const arch: Question[] = [
     category: 'arch',
     text: 'Wide ResNetがResNetに対して行った変更はどれか。',
     answer: 2,
-    needsCheck: true,
     choices: [
       {
         text: 'スキップ結合をすべて取り除いた',

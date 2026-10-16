@@ -294,7 +294,6 @@ export const genai: Question[] = [
     category: 'genai',
     text: 'word2vecに対するELMoの改善点として正しいものはどれか。',
     answer: 0,
-    needsCheck: true,
     choices: [
       {
         text: '同じ単語でも文脈に応じて異なるベクトルを与えられるようにした',
@@ -367,7 +366,6 @@ export const genai: Question[] = [
     category: 'genai',
     text: '大規模言語モデルにおける「スケーリング則」が示していることはどれか。',
     answer: 0,
-    needsCheck: true,
     choices: [
       {
         text: 'モデルのパラメータ数・データ量・計算量を増やすほど、性能が予測可能な形で向上するという経験則',
@@ -416,7 +414,6 @@ export const genai: Question[] = [
     category: 'genai',
     text: 'CLIPのようなマルチモーダルモデルが学習しているものはどれか。',
     answer: 1,
-    needsCheck: true,
     choices: [
       {
         text: '画像から次の画像を予測する関係',
@@ -441,7 +438,6 @@ export const genai: Question[] = [
     category: 'genai',
     text: 'テキストから画像を生成するモデルで、文章の意味を画像生成に反映させるために行われていることはどれか。',
     answer: 0,
-    needsCheck: true,
     choices: [
       {
         text: 'テキストをベクトル化し、それを条件として与えながらノイズ除去の過程を進める',
@@ -538,7 +534,6 @@ export const genai: Question[] = [
     category: 'genai',
     text: 'WaveNetに代表される音声合成技術の特徴として正しいものはどれか。',
     answer: 3,
-    needsCheck: true,
     choices: [
       {
         text: '録音済みの音声素片をつなぎ合わせて発話を作る',

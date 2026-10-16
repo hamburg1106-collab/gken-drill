@@ -6,7 +6,6 @@ export const law: Question[] = [
     category: 'law',
     text: '個人情報保護法における「匿名加工情報」の説明として正しいものはどれか。',
     answer: 1,
-    needsCheck: true,
     choices: [
       {
         text: '氏名だけを削除した情報で、他の情報と照合すれば個人を特定できる',
@@ -31,7 +30,6 @@ export const law: Question[] = [
     category: 'law',
     text: 'GDPR（EU一般データ保護規則）について正しい説明はどれか。',
     answer: 2,
-    needsCheck: true,
     choices: [
       {
         text: 'EU域内に拠点を持つ企業のみが対象となる',
@@ -56,7 +54,6 @@ export const law: Question[] = [
     category: 'law',
     text: '日本の著作権法において、AIの学習用に著作物を利用することに関する説明として正しいものはどれか。',
     answer: 0,
-    needsCheck: true,
     choices: [
       {
         text: '第30条の4により、著作物に表現された思想や感情の享受を目的としない利用は原則として著作権者の許諾なく行える',
@@ -81,7 +78,6 @@ export const law: Question[] = [
     category: 'law',
     text: 'EUのAI規則（AI Act）が採用している基本的な考え方はどれか。',
     answer: 3,
-    needsCheck: true,
     choices: [
       {
         text: 'すべてのAIシステムに同一の規制を課す',
@@ -202,7 +198,6 @@ export const law: Question[] = [
     category: 'law',
     text: 'データ分析プロジェクトの進め方を定めた代表的な方法論「CRISP-DM」の説明として正しいものはどれか。',
     answer: 1,
-    needsCheck: true,
     choices: [
       {
         text: 'ニューラルネットワークの層構成を設計する手順である',
@@ -227,7 +222,6 @@ export const law: Question[] = [
     category: 'law',
     text: '日本政府がまとめた「人間中心のAI社会原則」に含まれる考え方として適切なものはどれか。',
     answer: 2,
-    needsCheck: true,
     choices: [
       {
         text: 'AIの判断は人間の判断より優先されるべきである',
@@ -252,7 +246,6 @@ export const law: Question[] = [
     category: 'law',
     text: '個人情報保護法における「仮名加工情報」の説明として正しいものはどれか。',
     answer: 2,
-    needsCheck: true,
     choices: [
       {
         text: '復元できないよう加工されており、本人の同意なく第三者に提供できる',
@@ -277,7 +270,6 @@ export const law: Question[] = [
     category: 'law',
     text: '個人データの第三者提供に関する説明として正しいものはどれか。',
     answer: 1,
-    needsCheck: true,
     choices: [
       {
         text: '取得時に利用目的を通知していれば、常に自由に第三者提供できる',
@@ -302,7 +294,6 @@ export const law: Question[] = [
     category: 'law',
     text: '不正競争防止法で保護される「限定提供データ」の説明として正しいものはどれか。',
     answer: 0,
-    needsCheck: true,
     choices: [
       {
         text: '業として特定の者に提供する、電磁的に相当量蓄積・管理された技術上または営業上の情報',
@@ -327,7 +318,6 @@ export const law: Question[] = [
     category: 'law',
     text: '不正競争防止法上の「営業秘密」として保護されるための要件に含まれないものはどれか。',
     answer: 3,
-    needsCheck: true,
     choices: [
       {
         text: '秘密として管理されていること（秘密管理性）',
@@ -352,7 +342,6 @@ export const law: Question[] = [
     category: 'law',
     text: '日本の特許法におけるAIと発明者の扱いについて、現状の整理として正しいものはどれか。',
     answer: 2,
-    needsCheck: true,
     choices: [
       {
         text: 'AIを発明者として出願できる',
@@ -377,7 +366,6 @@ export const law: Question[] = [
     category: 'law',
     text: 'AI開発の委託契約において、あらかじめ明確にしておくべき事項として最も重要なものはどれか。',
     answer: 1,
-    needsCheck: true,
     choices: [
       {
         text: '開発者の勤務時間',
@@ -474,7 +462,6 @@ export const law: Question[] = [
     category: 'law',
     text: '生成AIの出力が既存の著作物と似ていた場合の著作権侵害の判断について、正しい説明はどれか。',
     answer: 3,
-    needsCheck: true,
     choices: [
       {
         text: '学習に使った時点で常に侵害となる',
@@ -499,7 +486,6 @@ export const law: Question[] = [
     category: 'law',
     text: 'AIガバナンスにおける「アジャイル・ガバナンス」の考え方として正しいものはどれか。',
     answer: 0,
-    needsCheck: true,
     choices: [
       {
         text: '技術や社会の変化が速いため、固定的な規制ではなく、状況を監視して継続的に見直す仕組みを重視する',

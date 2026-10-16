@@ -102,12 +102,15 @@ export function Home({
           </span>
         </button>
 
-        <button className="card card-check" onClick={onOpenChecks}>
-          <span className="card-title">要確認の問題</span>
-          <span className="card-sub">
-            ⚠ 年号・数値・法令などを含む{checkQs.length}問 ／ 確認済み {checkDone}問
-          </span>
-        </button>
+        {/* 照合が済んだ問題からはマークを外すので、新しく追加した問題に付いたときだけ出す */}
+        {checkQs.length > 0 && (
+          <button className="card card-check" onClick={onOpenChecks}>
+            <span className="card-title">要確認の問題</span>
+            <span className="card-sub">
+              ⚠ 年号・数値・法令などを含む{checkQs.length}問 ／ 確認済み {checkDone}問
+            </span>
+          </button>
+        )}
 
         <button className="card card-log" onClick={onOpenLog}>
           <span className="card-title">学習の記録</span>

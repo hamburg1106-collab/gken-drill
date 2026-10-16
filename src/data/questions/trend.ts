@@ -150,7 +150,6 @@ export const trend: Question[] = [
     category: 'trend',
     text: 'シンギュラリティ（技術的特異点）について、レイ・カーツワイルの主張として知られるものはどれか。',
     answer: 2,
-    needsCheck: true,
     choices: [
       {
         text: 'AIが人間の知能を超えることは原理的に起こり得ない',
@@ -165,7 +164,7 @@ export const trend: Question[] = [
         note: '技術の指数関数的な進歩を根拠とする予測。「人間を超える」のが2029年、「予測不能な転換点＝シンギュラリティ」が2045年、と2段階で覚える。',
       },
       {
-        text: 'シンギュラリティは1997年のDeep Blueの勝利で既に到達した',
+        text: 'シンギュラリティは2016年のAlphaGoの勝利で既に到達した',
         note: '特定のゲームでの勝利は特化型AIの成果であり、汎用的な知能の到達点とは見なされていない。',
       },
     ],
@@ -175,7 +174,6 @@ export const trend: Question[] = [
     category: 'trend',
     text: 'ムーアの法則が述べている内容はどれか。',
     answer: 3,
-    needsCheck: true,
     choices: [
       {
         text: 'ニューラルネットワークの層を深くするほど精度が上がる',
@@ -248,7 +246,6 @@ export const trend: Question[] = [
     category: 'trend',
     text: '「バーニーおじさんのルール」が示す経験則はどれか。',
     answer: 1,
-    needsCheck: true,
     choices: [
       {
         text: '学習率は0.01から始めて徐々に下げるのがよい',
@@ -409,31 +406,6 @@ export const trend: Question[] = [
       {
         text: '量子コンピュータの実用化、5Gの普及、ブロックチェーン',
         note: 'いずれも第3次AIブームの起点となった要因ではない。',
-      },
-    ],
-  },
-  {
-    id: 't19',
-    category: 'trend',
-    text: '日本政府が掲げる「Society 5.0」が指すものはどれか。',
-    answer: 0,
-    needsCheck: true,
-    choices: [
-      {
-        text: 'サイバー空間と現実空間を高度に融合させ、経済発展と社会的課題の解決を両立する社会',
-        note: '狩猟社会、農耕社会、工業社会、情報社会に続く5番目の社会と位置づけられている。AIやIoTがその基盤技術とされる。',
-      },
-      {
-        text: 'AIが人間の労働をすべて代替した社会',
-        note: '労働の全面代替を目指す構想ではない。人間中心の社会という位置づけである。',
-      },
-      {
-        text: 'EUが定めたAI規制の枠組み',
-        note: 'EUの枠組みはAI Actであり、日本の社会構想とは別である。',
-      },
-      {
-        text: 'インターネットの次世代規格の名称',
-        note: '通信規格の名称ではなく、目指す社会像を表す概念である。',
       },
     ],
   },

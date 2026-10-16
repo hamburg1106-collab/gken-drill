@@ -6,7 +6,6 @@ export const history: Question[] = [
     category: 'history',
     text: '1956年のダートマス会議で「人工知能（Artificial Intelligence）」という言葉を提案した人物は誰か。',
     answer: 0,
-    needsCheck: true,
     choices: [
       {
         text: 'ジョン・マッカーシー',
@@ -127,7 +126,6 @@ export const history: Question[] = [
     category: 'history',
     text: '1960年代にジョセフ・ワイゼンバウムが開発した、パターンマッチによって対話するプログラムはどれか。',
     answer: 1,
-    needsCheck: true,
     choices: [
       {
         text: 'MYCIN',
@@ -176,7 +174,6 @@ export const history: Question[] = [
     category: 'history',
     text: '1984年に始まり現在も続いている、人間の持つ一般常識をすべて記述しようとするプロジェクトはどれか。',
     answer: 3,
-    needsCheck: true,
     choices: [
       {
         text: 'ImageNet',
@@ -293,36 +290,10 @@ export const history: Question[] = [
     ],
   },
   {
-    id: 'h13',
-    category: 'history',
-    text: '1997年にチェスの世界チャンピオン、ガルリ・カスパロフを破ったIBMのシステムはどれか。',
-    answer: 2,
-    needsCheck: true,
-    choices: [
-      {
-        text: 'Watson',
-        note: '同じくIBMのシステムだが、2011年にクイズ番組「ジェパディ！」で勝利した質問応答システムである。',
-      },
-      {
-        text: 'AlphaGo',
-        note: 'DeepMindが開発した囲碁AI。2016年に棋士のイ・セドルを破った。深層学習と強化学習、モンテカルロ木探索を組み合わせている。',
-      },
-      {
-        text: 'Deep Blue',
-        note: 'IBMのチェス専用システム。膨大な局面を高速に探索する力業のアプローチで、機械学習が主役ではなかった点が後のAlphaGoとの大きな違いである。',
-      },
-      {
-        text: 'Ponanza',
-        note: '日本の将棋AI。プロ棋士に勝利した将棋プログラムとして知られるが、チェスでもIBM製でもない。',
-      },
-    ],
-  },
-  {
     id: 'h14',
     category: 'history',
     text: '2012年の画像認識コンテストILSVRCでディープラーニングを用いて圧勝し、第3次AIブームの起点となったモデルはどれか。',
     answer: 1,
-    needsCheck: true,
     choices: [
       {
         text: 'VGG',
@@ -371,7 +342,6 @@ export const history: Question[] = [
     category: 'history',
     text: 'ニューウェルとサイモンが開発した、世界初の人工知能プログラムとされるものはどれか。',
     answer: 2,
-    needsCheck: true,
     choices: [
       {
         text: 'パーセプトロン',
@@ -444,7 +414,6 @@ export const history: Question[] = [
     category: 'history',
     text: 'エキスパートシステムMYCINに関する説明として正しいものはどれか。',
     answer: 0,
-    needsCheck: true,
     choices: [
       {
         text: '血液感染症の診断と抗生物質の処方を支援し、一定の正答率を示したが実用化はされなかった',
@@ -493,11 +462,10 @@ export const history: Question[] = [
     category: 'history',
     text: '2011年にクイズ番組で人間のチャンピオンに勝利したIBMのシステムと、その仕組みの説明として正しいものはどれか。',
     answer: 1,
-    needsCheck: true,
     choices: [
       {
-        text: 'Deep Blueで、全局面を探索して最適解を求めた',
-        note: 'Deep Blueはチェスのシステムであり、1997年にカスパロフを破ったものである。',
+        text: 'AlphaGoで、深層学習と強化学習を組み合わせて手を選んだ',
+        note: 'AlphaGoはDeepMindが開発した囲碁のAIであり、クイズ番組で勝利したIBMのシステムではない。',
       },
       {
         text: 'Watsonで、大量の文書から関連する仮説を立てて確信度を評価した',
@@ -518,7 +486,6 @@ export const history: Question[] = [
     category: 'history',
     text: 'AlphaGo Zeroが従来のAlphaGoと比べて画期的だった点はどれか。',
     answer: 3,
-    needsCheck: true,
     choices: [
       {
         text: '初めて人間のプロ棋士に勝利した点',
@@ -543,7 +510,6 @@ export const history: Question[] = [
     category: 'history',
     text: 'エキスパートシステム「DENDRAL」が行ったこととして正しいものはどれか。',
     answer: 3,
-    needsCheck: true,
     choices: [
       {
         text: '血液感染症を診断し、抗生物質を提案した',
@@ -616,7 +582,6 @@ export const history: Question[] = [
     category: 'history',
     text: '1982年から日本で国家プロジェクトとして進められた「第五世代コンピュータ」の目標として正しいものはどれか。',
     answer: 1,
-    needsCheck: true,
     choices: [
       {
         text: 'ディープラーニング専用のGPUを開発する',
