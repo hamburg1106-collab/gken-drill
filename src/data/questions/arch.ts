@@ -871,31 +871,6 @@ export const arch: Question[] = [
     ],
   },
   {
-    id: 'a38',
-    category: 'arch',
-    text: 'EfficientNetが提案した「複合スケーリング（compound scaling）」の考え方はどれか。',
-    answer: 0,
-    needsCheck: true,
-    choices: [
-      {
-        text: 'ネットワークの深さ・幅（チャンネル数）・入力画像の解像度を、決まった比率でバランスよく同時に大きくする',
-        note: 'どれか1つだけを大きくするより効率よく精度が上がることを示した。同じ精度を従来よりずっと少ないパラメータで達成した。',
-      },
-      {
-        text: '層を深くすることだけに集中し、幅は固定する',
-        note: '深さだけを伸ばすのは従来のやり方で、EfficientNetはそれを改めた。',
-      },
-      {
-        text: '学習データの量を増やすことで精度を上げる',
-        note: 'データではなく、モデルの大きくし方に関する提案である。',
-      },
-      {
-        text: '複数のモデルの予測を多数決で統合する',
-        note: 'それはアンサンブル学習の考え方である。',
-      },
-    ],
-  },
-  {
     id: 'a39',
     category: 'arch',
     text: 'SENet（Squeeze-and-Excitation Network）が導入した仕組みはどれか。',

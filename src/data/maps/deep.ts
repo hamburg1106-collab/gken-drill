@@ -90,7 +90,6 @@ export const deepMaps: TermMap[] = [
       { id: 'pt', label: '学習済み\nモデル', kind: 'group', col: 1, row: 0, def: 'ImageNetや大量のテキストで、あらかじめ学習させたモデル。', match: ['事前学習済み', '学習済みモデル'] },
       { id: 'tl', label: '転移学習', col: 0, row: 1.4, def: '学習済み層の重みは固定し、出力側だけ学習する。データがごく少ないとき向き。' },
       { id: 'ft', label: 'ファイン\nチューニング', col: 1, row: 1.4, def: '学習済み層の重みも含めて再調整する。ある程度データがあるとき向き。' },
-      { id: 'lora', label: 'LoRA\n(PEFT)', col: 2, row: 1.4, def: '元の重みは固定したまま、少数の追加パラメータだけを学習する。大規模モデルの調整を安く済ませる。', match: ['LoRA'] },
       { id: 'comp', label: 'モデル圧縮', kind: 'group', col: 1, row: 3, def: '精度をなるべく落とさずに、サイズや計算量を減らす技術の総称。スマホなどで動かすため。', match: ['プルーニング', '量子化', '蒸留'] },
       { id: 'dist', label: '蒸留', col: 0, row: 4.4, def: '大きな教師モデルの出力（確率分布）を、小さな生徒モデルに真似させる。' },
       { id: 'prune', label: 'プルー\nニング', col: 1, row: 4.4, def: '重要度の低い結合を削除する（枝刈り）。', match: ['プルーニング'] },
@@ -100,11 +99,9 @@ export const deepMaps: TermMap[] = [
       { from: 'pt', to: 'tl', type: 'include' },
       { from: 'pt', to: 'ft', type: 'include' },
       { from: 'tl', to: 'ft', type: 'contrast', label: '固定↔再調整' },
-      { from: 'ft', to: 'lora', type: 'evolve', label: '一部だけ' },
       { from: 'comp', to: 'dist', type: 'include' },
       { from: 'comp', to: 'prune', type: 'include' },
       { from: 'comp', to: 'quant', type: 'include' },
-      { from: 'lora', to: 'quant', type: 'contrast', label: '調整↔軽量化' },
     ],
   },
   {
@@ -122,7 +119,7 @@ export const deepMaps: TermMap[] = [
       { id: 'vit', label: 'Vision\nTransformer', col: 1, row: 7, def: '画像認識なのにCNN（畳み込み）を使わず、自然言語処理で使われていたTransformerで画像を扱う。', match: ['Vision Transformer', 'ViT'] },
       { id: 'senet', label: 'SENet', col: 2, row: 5.6, def: 'チャンネルごとの重要度を学習して重みを付け直す（Squeeze-and-Excitation）。2017年のILSVRCで優勝。' },
       { id: 'mobile', label: 'MobileNet', col: 0, row: 8.4, def: '畳み込みを深さ方向と点方向に分けて（depthwise separable）計算量を大幅に削減。スマホ向け。' },
-      { id: 'eff', label: 'EfficientNet', col: 2, row: 8.4, def: '深さ・幅・解像度を決まった比率で同時に大きくする（複合スケーリング）。少ないパラメータで高精度。' },
+      { id: 'eff', label: 'EfficientNet', col: 2, row: 8.4, def: '少ないパラメータで高い精度を出したCNN。' },
     ],
     edges: [
       { from: 'lenet', to: 'alex', type: 'evolve', label: 'GPU・ReLU' },
