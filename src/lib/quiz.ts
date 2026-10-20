@@ -20,9 +20,11 @@ export function shuffle<T>(items: readonly T[]): T[] {
   return a
 }
 
-function toItem(question: Question): QuizItem {
+/** order は表示順に並べた question.choices の添字。省略するとシャッフルする */
+export function toItem(question: Question, order?: readonly number[]): QuizItem {
   const correct = question.choices[question.answer]
-  const choices = shuffle(question.choices)
+  const restored = order?.map((i) => question.choices[i]).filter((c) => c !== undefined)
+  const choices = restored && restored.length === question.choices.length ? restored : shuffle(question.choices)
   return {
     question,
     choices,
@@ -68,7 +70,7 @@ export function buildSet(
   })
 
   const picked = [...unseen, ...seen].slice(0, size)
-  return shuffle(picked).map(toItem)
+  return shuffle(picked).map((q) => toItem(q))
 }
 
 /** 指定したIDの問題だけでセットを作る（誤答のやり直し用） */
@@ -76,5 +78,5 @@ export function buildSetFromIds(pool: Question[], ids: string[], size = SET_SIZE
   const set = new Set(ids)
   return shuffle(pool.filter((q) => set.has(q.id)))
     .slice(0, size)
-    .map(toItem)
+    .map((q) => toItem(q))
 }

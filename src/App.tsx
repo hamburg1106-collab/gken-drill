@@ -11,7 +11,19 @@ import { labelOf, poolOf } from './lib/source'
 import type { Progress } from './lib/storage'
 import { loadProgress, markUnsure, recordAnswer, resetProgress, reviewIds, weakIds } from './lib/storage'
 import type { StudyLog } from './lib/studyLog'
-import { loadLog, recordStudy, refreshReach } from './lib/studyLog'
+import { loadLog, recordMockStudy, recordStudy, refreshReach } from './lib/studyLog'
+import type { MockModeId, MockResult as MockResultData, MockSession } from './lib/mock'
+import {
+  addMockResult,
+  clearSession,
+  loadSession,
+  newSession,
+  restoreSession,
+  saveSession,
+  scoreMock,
+} from './lib/mock'
+import { Mock } from './screens/Mock'
+import { MockResult } from './screens/MockResult'
 import { CheckList } from './screens/CheckList'
 import { ExcludedList } from './screens/ExcludedList'
 import { FigureList } from './screens/FigureList'
@@ -36,6 +48,14 @@ type View =
   | { kind: 'fig'; id: string }
   | { kind: 'quiz'; source: Source; title: string; items: QuizItem[]; seq: number }
   | { kind: 'result'; source: Source; title: string; items: QuizItem[]; results: boolean[]; unsure: boolean[] }
+  | { kind: 'mock'; session: MockSession; items: QuizItem[]; resumed: boolean; seq: number }
+  | {
+      kind: 'mockResult'
+      result: MockResultData
+      items: QuizItem[]
+      answers: (number | null)[]
+      history: MockResultData[]
+    }
 
 export function App() {
   const [progress, setProgress] = useState<Progress>(() => loadProgress())
@@ -71,7 +91,11 @@ export function App() {
         case 'weak':
         case 'checks':
         case 'excluded':
+        case 'mockResult':
           setView({ kind: 'home' })
+          break
+        case 'mock':
+          // 模試の画面は自分で戻るボタンを受け取って一時停止にする
           break
         case 'map':
           setView({ kind: 'maps' })
@@ -142,6 +166,74 @@ export function App() {
     setExcluded(id, excluded)
     setExcludedVersion((v) => v + 1)
     setLog(refreshReach(log, progress))
+  }
+
+  function startMock(mode: MockModeId) {
+    const { session, items } = newSession(mode)
+    saveSession(session)
+    const next = seq + 1
+    setSeq(next)
+    setView({ kind: 'mock', session, items, resumed: false, seq: next })
+  }
+
+  function resumeMock() {
+    const saved = loadSession()
+    if (!saved) return
+    const { session, items } = restoreSession(saved)
+    if (items.length === 0) {
+      clearSession()
+      setView({ kind: 'home' })
+      return
+    }
+    const next = seq + 1
+    setSeq(next)
+    setView({ kind: 'mock', session, items, resumed: true, seq: next })
+  }
+
+  /** 模試の採点。解答した問題は正誤の記録と学習の記録にも反映する */
+  function finishMock(session: MockSession, items: QuizItem[], answers: (number | null)[], usedMs: number, timeUp: boolean) {
+    const result = scoreMock(session.mode, items, answers, usedMs, timeUp)
+    let next = progress
+    items.forEach((it, i) => {
+      const a = answers[i]
+      if (a !== null && a !== undefined) next = recordAnswer(next, it.question.id, a === it.answerIndex)
+    })
+    setProgress(next)
+    setLog(recordMockStudy(log, result.answered, result.correct, usedMs, next))
+    const history = addMockResult(result).filter((h) => h.mode === session.mode)
+    clearSession()
+    setView({ kind: 'mockResult', result, items, answers, history })
+  }
+
+  if (view.kind === 'mock') {
+    return (
+      <Mock
+        key={view.seq}
+        initial={view.session}
+        items={view.items}
+        resumed={view.resumed}
+        onFinish={(answers, usedMs, timeUp) => finishMock(view.session, view.items, answers, usedMs, timeUp)}
+        onDiscard={() => {
+          clearSession()
+          setView({ kind: 'home' })
+        }}
+        onLeave={() => setView({ kind: 'home' })}
+      />
+    )
+  }
+
+  if (view.kind === 'mockResult') {
+    return (
+      <MockResult
+        result={view.result}
+        items={view.items}
+        answers={view.answers}
+        history={view.history}
+        onRetry={(ids) => retry(ids, { kind: 'all' })}
+        onAgain={() => startMock(view.result.mode)}
+        onHome={() => setView({ kind: 'home' })}
+      />
+    )
   }
 
   if (view.kind === 'quiz') {
@@ -265,6 +357,9 @@ export function App() {
       onOpenChecks={() => setView({ kind: 'checks' })}
       onOpenExcluded={() => setView({ kind: 'excluded' })}
       onReset={() => setProgress(resetProgress())}
+      pendingMock={loadSession()}
+      onStartMock={startMock}
+      onResumeMock={resumeMock}
     />
   )
 }

@@ -8,7 +8,15 @@ import { loadChecked } from '../lib/checked'
 import { WEAK_MIN_WRONG, accuracyOf, unsureIds, weakIds, wrongIds } from '../lib/storage'
 import type { Source } from '../lib/source'
 import type { StudyLog } from '../lib/studyLog'
-import { formatDuration, todayOf } from '../lib/studyLog'
+import { dateKey, formatDuration, shortDate, todayOf } from '../lib/studyLog'
+import type { MockModeId, MockResult, MockSession } from '../lib/mock'
+import { MOCK_MODES, clock, loadMockHistory } from '../lib/mock'
+
+function lastMockOf(history: MockResult[], mode: MockModeId): string {
+  const last = [...history].reverse().find((h) => h.mode === mode)
+  if (!last) return ''
+  return ` ／ 前回 ${Math.round((last.correct / Math.max(1, last.total)) * 100)}%（${shortDate(dateKey(last.at))}）`
+}
 
 type Props = {
   progress: Progress
@@ -21,6 +29,10 @@ type Props = {
   onOpenChecks: () => void
   onOpenExcluded: () => void
   onReset: () => void
+  /** 途中で止めた模試（なければ null） */
+  pendingMock: MockSession | null
+  onStartMock: (mode: MockModeId) => void
+  onResumeMock: () => void
 }
 
 function Bar({ answered, correct, total }: { answered: number; correct: number; total: number }) {
@@ -45,7 +57,16 @@ export function Home({
   onOpenChecks,
   onOpenExcluded,
   onReset,
+  pendingMock,
+  onStartMock,
+  onResumeMock,
 }: Props) {
+  const mockHistory = loadMockHistory()
+
+  function startMock(mode: MockModeId) {
+    if (pendingMock && !confirm('途中の模試があります。破棄して新しく始めますか？')) return
+    onStartMock(mode)
+  }
   // 出題しない問題は、問題数にも到達度にも数えない
   const active = activeQuestions()
   const excludedCount = excludedQuestions().length
@@ -78,6 +99,32 @@ export function Home({
         <button className="card card-primary" onClick={() => onStart({ kind: 'all' })}>
           <span className="card-title">全分野ランダム</span>
           <span className="card-sub">10問 ／ 未出題の問題から優先して出す</span>
+        </button>
+
+        {pendingMock && (
+          <button className="card card-mock card-resume" onClick={onResumeMock}>
+            <span className="card-title">▶ {MOCK_MODES[pendingMock.mode].label}の続き</span>
+            <span className="card-sub">
+              解答 {pendingMock.answers.filter((a) => a !== null).length}/{pendingMock.ids.length} ／ 残り{' '}
+              {clock(MOCK_MODES[pendingMock.mode].limitMs - pendingMock.elapsedMs)}
+            </span>
+          </button>
+        )}
+
+        <button className="card card-mock" onClick={() => startMock('mini')}>
+          <span className="card-title">ミニ模試</span>
+          <span className="card-sub">
+            {MOCK_MODES.mini.count}問・{MOCK_MODES.mini.limitMs / 60000}分。本番と同じペースで、通勤のすきまに
+            {lastMockOf(mockHistory, 'mini')}
+          </span>
+        </button>
+
+        <button className="card card-mock" onClick={() => startMock('full')}>
+          <span className="card-title">本番形式の模試</span>
+          <span className="card-sub">
+            {MOCK_MODES.full.count}問・{MOCK_MODES.full.limitMs / 60000}分（オンライン試験と同じ）
+            {lastMockOf(mockHistory, 'full')}
+          </span>
         </button>
 
         <button

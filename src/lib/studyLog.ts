@@ -87,6 +87,35 @@ export function recordStudy(log: StudyLog, correct: boolean, progress: Progress,
   return next
 }
 
+/**
+ * 模試の解答をまとめて記録する。模試は最後に一度に採点するので、解答の間隔から時間を推定できない。
+ * 代わりに実際にかかった時間（一時停止中を除く）をそのまま勉強時間に足す
+ */
+export function recordMockStudy(
+  log: StudyLog,
+  answered: number,
+  correct: number,
+  usedMs: number,
+  progress: Progress,
+  now = Date.now(),
+): StudyLog {
+  if (answered === 0) return log
+  const date = dateKey(now)
+  const last = log[log.length - 1]
+  const today = last?.date === date ? last : null
+  const day: Day = {
+    date,
+    answers: (today?.answers ?? 0) + answered,
+    correct: (today?.correct ?? 0) + correct,
+    studyMs: (today?.studyMs ?? 0) + usedMs,
+    lastAt: now,
+    ...reachOf(progress),
+  }
+  const next = today ? [...log.slice(0, -1), day] : [...log, day]
+  saveLog(next)
+  return next
+}
+
 function reachOf(progress: Progress): Pick<Day, 'reach' | 'reachByCategory' | 'total'> {
   const active = activeQuestions()
   const reach = accuracyOf(
