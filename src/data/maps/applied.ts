@@ -36,7 +36,7 @@ export const appliedMaps: TermMap[] = [
       { id: 'sim', label: 'コサイン\n類似度', col: 2, row: 1.4, def: '2つのベクトルのなす角で近さを測る。大きさではなく向きだけを比べる。', match: ['コサイン類似度'] },
       { id: 'hyp', label: '分布仮説', col: 0, row: 2.8, def: '単語の意味は、その周りに現れる単語で決まる、という考え方。' },
       { id: 'w2v', label: 'word2vec', col: 1, row: 2.8, def: '分布仮説に基づいて分散表現を学習する手法。' },
-      { id: 'ft', label: 'fastText', col: 2, row: 2.8, def: '単語を部分文字列に分けて学ぶので、学習時になかった単語にも対応できる。', match: ['文字単位に分解'] },
+      { id: 'ft', label: 'fastText', col: 2, row: 2.8, def: '単語を部分文字列に分けて学ぶので、学習時になかった単語にも対応できる。', match: [] },
       { id: 'cbow', label: 'CBOW', col: 0, row: 4.2, def: '周辺の単語から、真ん中の単語を当てる。', match: ['分布仮説'] },
       { id: 'sg', label: 'skip-gram', col: 1, row: 4.2, def: '真ん中の単語から、周辺の単語を当てる。', match: ['分布仮説'] },
       { id: 'elmo', label: 'ELMo', col: 2, row: 4.2, def: '文全体を読んで、同じ単語でも文脈に応じて別のベクトルを与える（「バンク」が銀行か土手か）。' },
