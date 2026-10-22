@@ -255,6 +255,7 @@ button {
 }
 
 .q-text {
+  white-space: pre-line;
   font-size: 18px;
   font-weight: 600;
   line-height: 1.6;
@@ -501,6 +502,7 @@ button {
 }
 
 .wrong-q {
+  white-space: pre-line;
   margin: 0 0 6px;
   font-size: 14px;
   line-height: 1.6;
@@ -1268,6 +1270,7 @@ button {
 }
 
 .qcard-q {
+  white-space: pre-line;
   font-size: 14px;
   line-height: 1.6;
   cursor: pointer;

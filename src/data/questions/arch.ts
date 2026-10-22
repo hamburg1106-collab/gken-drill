@@ -1537,4 +1537,28 @@ export const arch: Question[] = [
       },
     ],
   },
+  {
+    id: 'a67',
+    category: 'arch',
+    text: '次のア〜エのうち、Transformerの説明として正しいものの組み合わせはどれか。\nア　Self-Attentionで、系列の中の単語どうしの関係を捉える\nイ　再帰的な構造で、単語を1つずつ順番に処理する\nウ　単語の順序の情報を、位置エンコーディングで補う\nエ　畳み込み層を何層も重ねて、局所的な特徴を捉えることが中心である',
+    answer: 1,
+    choices: [
+      {
+        text: 'ア・イ',
+        note: 'イはRNNの説明である。Transformerは再帰をやめ、系列全体を一度に並列で処理する。',
+      },
+      {
+        text: 'ア・ウ',
+        note: 'Self-Attentionで単語どうしの関係を直接捉え、並列処理で失われる語順の情報は位置エンコーディングで足す。この2つがTransformerの柱である。',
+      },
+      {
+        text: 'イ・エ',
+        note: 'イはRNN、エはCNNの説明である。Transformerはどちらも中心に置かない。',
+      },
+      {
+        text: 'ウ・エ',
+        note: 'エはCNNの説明である。Transformerの中心は畳み込みではなくAttentionである。',
+      },
+    ],
+  },
 ]
