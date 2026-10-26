@@ -4,6 +4,7 @@ import { ANALOGIES } from '../data/analogies'
 import { figureForQuestion } from '../figures'
 import { FigureOverlay } from './FigureView'
 import type { QuizItem } from '../lib/quiz'
+import { isRelationId } from '../lib/relationQuiz'
 
 type Props = {
   title: string
@@ -176,6 +177,8 @@ export function Quiz({ title, items, onAnswer, onUnsure, onExclude, isExcluded, 
             {isLast ? '結果を見る' : '次の問題へ'}
           </button>
 
+          {/* 関係性クイズは用語マップから作った問題なので、出題しない設定の対象にしない */}
+          {!isRelationId(question.id) && (
           <button
             className={`exclude-toggle${isExcluded(question.id) ? ' on' : ''}`}
             aria-pressed={isExcluded(question.id)}
@@ -185,6 +188,7 @@ export function Quiz({ title, items, onAnswer, onUnsure, onExclude, isExcluded, 
               ? '🚫 今後は出題しません（ホーム下の一覧から戻せます）・取り消す'
               : '🚫 テキストにない問題（今後は出さない）'}
           </button>
+          )}
         </div>
       )}
 

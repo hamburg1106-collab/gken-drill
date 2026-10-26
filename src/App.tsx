@@ -22,6 +22,7 @@ import {
   saveSession,
   scoreMock,
 } from './lib/mock'
+import { relationQuestions } from './lib/relationQuiz'
 import { Mock } from './screens/Mock'
 import { MockResult } from './screens/MockResult'
 import { CheckList } from './screens/CheckList'
@@ -77,6 +78,7 @@ export function App() {
     if (source.kind === 'term' && lastMapId) setView({ kind: 'map', id: lastMapId })
     else if (source.kind === 'figure') setView({ kind: 'fig', id: source.figureId })
     else if (source.kind === 'weak') setView({ kind: 'weak' })
+    else if (source.kind === 'relation' && source.mapId) setView({ kind: 'map', id: source.mapId })
     else setView({ kind: 'home' })
   }
 
@@ -134,11 +136,8 @@ export function App() {
 
   /** 誤答のやり直し。source は引き継ぎ、この後の「次の10問へ」が元の出題元に戻るようにする */
   function retry(ids: string[], source: Source) {
-    const items = buildSetFromIds(
-      ALL_QUESTIONS.filter((q) => !isExcluded(q.id)),
-      ids,
-      ids.length,
-    )
+    const pool = source.kind === 'relation' ? relationQuestions() : ALL_QUESTIONS.filter((q) => !isExcluded(q.id))
+    const items = buildSetFromIds(pool, ids, ids.length)
     if (items.length === 0) {
       setView({ kind: 'home' })
       return
@@ -262,7 +261,8 @@ export function App() {
   }
 
   if (view.kind === 'result') {
-    const fromMap = view.source.kind === 'term' && !!lastMapId
+    const fromMap =
+      (view.source.kind === 'term' && !!lastMapId) || (view.source.kind === 'relation' && !!view.source.mapId)
     const fromFig = view.source.kind === 'figure'
     // 苦手問題は毎回「上位10問」なので、次の10問へ進んでも同じ問題が出やすい。一覧に戻す
     const fromWeak = view.source.kind === 'weak'
@@ -274,7 +274,10 @@ export function App() {
         unsure={view.unsure}
         onRetryWrong={(ids) => retry(ids, view.source)}
         onNextSet={
-          fromMap || fromFig || fromWeak ? undefined : () => start(view.source, view.items.map((it) => it.question.id))
+          // 関係性クイズは1枚の図でも十数問あるので、図から始めても次の10問へ進める
+          (fromMap && view.source.kind !== 'relation') || fromFig || fromWeak
+            ? undefined
+            : () => start(view.source, view.items.map((it) => it.question.id))
         }
         onHome={() => leave(view.source)}
         homeLabel={fromMap ? '用語マップに戻る' : fromFig ? '図解に戻る' : fromWeak ? '苦手問題の一覧に戻る' : 'ホームに戻る'}
@@ -340,6 +343,7 @@ export function App() {
             setLastMapId(map.id)
             start({ kind: 'term', label, ids })
           }}
+          onRelationQuiz={() => start({ kind: 'relation', mapId: map.id, label: map.title })}
         />
       )
     }

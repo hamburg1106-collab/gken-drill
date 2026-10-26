@@ -1,6 +1,7 @@
 import { CATEGORIES } from '../data'
 import type { CategoryId, Question } from '../data'
 import { activeQuestions } from './excluded'
+import { relationQuestions } from './relationQuiz'
 
 export type Source =
   | { kind: 'all' }
@@ -12,6 +13,8 @@ export type Source =
   | { kind: 'term'; label: string; ids: string[] }
   /** 動く図解から、その図に関係する問題だけを解く */
   | { kind: 'figure'; figureId: string; label: string; ids: string[] }
+  /** 用語マップの線から作った関係性クイズ。mapId があればその図だけ */
+  | { kind: 'relation'; mapId?: string; label?: string }
 
 export function labelOf(source: Source): string {
   switch (source.kind) {
@@ -27,6 +30,8 @@ export function labelOf(source: Source): string {
       return `用語：${source.label}`
     case 'figure':
       return `図解：${source.label}`
+    case 'relation':
+      return source.label ? `関係性：${source.label}` : '関係性クイズ'
   }
 }
 
@@ -45,5 +50,7 @@ export function poolOf(source: Source): Question[] {
       const ids = new Set(source.ids)
       return active.filter((q) => ids.has(q.id))
     }
+    case 'relation':
+      return relationQuestions(source.mapId)
   }
 }

@@ -1,6 +1,7 @@
 import { CATEGORIES } from '../data'
 import { activeQuestions, excludedQuestions } from '../lib/excluded'
 import { TERM_MAPS } from '../data/maps'
+import { relationQuestions } from '../lib/relationQuiz'
 import { FIGURES } from '../figures'
 import { Countdown } from './Countdown'
 import type { Progress } from '../lib/storage'
@@ -173,6 +174,13 @@ export function Home({
         <button className="card card-map" onClick={onOpenMaps}>
           <span className="card-title">用語マップ</span>
           <span className="card-sub">{TERM_MAPS.length}枚の図で、用語どうしのつながりを確認する</span>
+        </button>
+
+        <button className="card card-map" onClick={() => onStart({ kind: 'relation' })}>
+          <span className="card-title">関係性クイズ</span>
+          <span className="card-sub">
+            10問 ／ 用語マップの線から「AとBはどういう関係？」「Aを改良したものは？」を出題（全{relationQuestions().length}問）
+          </span>
         </button>
 
         <button className="card card-map" onClick={onOpenFigures}>

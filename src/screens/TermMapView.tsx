@@ -6,11 +6,14 @@ import type { Box, EdgeGeom } from '../lib/mapLayout'
 import { LABEL_FONT, NODE_FONT, VIEW_W, boxOf, edgeGeom, labelBox, viewHeight } from '../lib/mapLayout'
 import { useBackHandler } from '../lib/backButton'
 import { relatedQuestionIds } from '../lib/related'
+import { relationQuestions } from '../lib/relationQuiz'
 
 type Props = {
   map: TermMap
   onBack: () => void
   onQuiz: (label: string, ids: string[]) => void
+  /** この図の線から作った関係性クイズを解く */
+  onRelationQuiz: () => void
 }
 
 const nameOf = (n: MapNode) => n.label.replace(/\n/g, '')
@@ -73,7 +76,8 @@ function EdgeLabel({ g, a, b, dim }: { g: EdgeGeom; a: Box; b: Box; dim: boolean
   )
 }
 
-export function TermMapView({ map, onBack, onQuiz }: Props) {
+export function TermMapView({ map, onBack, onQuiz, onRelationQuiz }: Props) {
+  const relationCount = useMemo(() => relationQuestions(map.id).length, [map])
   const [selected, setSelected] = useState<string | null>(null)
   // 説明シートが開いているときは、戻るボタンでまずシートを閉じる
   useBackHandler(selected !== null, () => setSelected(null))
@@ -189,6 +193,11 @@ export function TermMapView({ map, onBack, onQuiz }: Props) {
             </li>
           ))}
         </ul>
+        {relationCount > 0 && (
+          <button className="btn btn-primary relation-start" onClick={onRelationQuiz}>
+            この図の関係を問題で解く（{relationCount}問）
+          </button>
+        )}
       </section>
 
       {node && (
