@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/gken-drill/sw.js', { scope: '/gken-drill/' })})}
